@@ -21,11 +21,12 @@ public class MasterThesisGa {
         System.out.println("Ciao Luca come va tutt'appost ?");
 
         Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(10, 0.5));
+        Engine<BitGene, Integer> engine
+                = Engine.builder(MasterThesisGa::eval, gtf).build();
 
-     
     }
 
-    public Integer eval(Genotype<BitGene> gt) {
+    public static Integer eval(Genotype<BitGene> gt) {
         return gt.getChromosome().as(BitChromosome.class).bitCount();
     }
 }
