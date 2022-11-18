@@ -11,4 +11,12 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>edu.ga.master.ga.MasterThesisGa</exec.mainClass>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>io.jenetics</groupId>
+            <artifactId>jenetics</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+    </dependencies>
 </project>
