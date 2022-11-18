@@ -11,9 +11,9 @@ package edu.ga.master.ga;
  */
 public class MasterThesisGa {
 
-    //questo è il main
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        System.out.println("Ciao Giusy come va tutt'appost ?");
+        System.out.println("Ciao Luca come va tutt'appost ?");
     }
 }
+//prova
