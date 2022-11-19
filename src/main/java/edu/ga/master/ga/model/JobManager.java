@@ -40,6 +40,10 @@ public class JobManager {
            ));
         }
     }
+
+    public List<WorkJob> getJobs() {
+        return jobs;
+    }
     
     public void printJobs() throws NoGeneratedJobsException{
         if(this.jobs == null){

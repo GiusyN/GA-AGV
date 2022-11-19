@@ -5,6 +5,7 @@
 package edu.ga.master.ga;
 
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
+import edu.ga.master.ga.model.Individual;
 import edu.ga.master.ga.model.JobManager;
 import edu.ga.master.ga.utils.Settings;
 import java.util.logging.Level;
@@ -25,19 +26,6 @@ public class MasterThesisGa {
     public static void main(String[] args) {
         System.out.println("Hello World!");
         System.out.println("Ciao Luca come va tutt'appost ?");
-//
-//        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(10, 0.5));
-//        Engine<BitGene, Integer> engine
-//                = Engine.builder(MasterThesisGa::eval, gtf).build();
-//        
-//        System.out.println("GTF "+gtf);
-//
-//        Genotype<BitGene> result = engine.stream()
-//                .limit(500)
-//                .collect(EvolutionResult.toBestGenotype());
-//        
-//        System.out.println("SOLUZIONE:\n" + result);
-//        System.out.println("finito tutto");
 
 
 
@@ -49,13 +37,12 @@ public class MasterThesisGa {
         } catch (NoGeneratedJobsException ex) {
             ex.printStackTrace();
         }
+        
+        Individual individual = new Individual();
+        
+        individual.print();
 
     }
 
-    public static Integer eval(Genotype<BitGene> gt) {
-        int n = gt.getChromosome().as(BitChromosome.class).bitCount();
-        //System.out.println("N = " + n);
-        return n;
-    }
 }
 //prova
