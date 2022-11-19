@@ -14,26 +14,26 @@ import java.util.List;
  *
  * @author sommovir
  */
-public class JobGenerator {
+public class JobManager {
     
-    private static JobGenerator _instance = null;
-    private List<Job> jobs = null;
+    private static JobManager _instance = null;
+    private List<WorkJob> jobs = null;
     
-    public static JobGenerator getInstance() {
+    public static JobManager getInstance() {
         if (_instance == null) {
-            _instance = new JobGenerator();
+            _instance = new JobManager();
         }
         return _instance;
     }
     
-    private JobGenerator() {
+    private JobManager() {
         super();
     }
     
     public void generateJobs(int n){
         jobs = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-           jobs.add(new Job(
+           jobs.add(new WorkJob(
                    i,  //id
                    Utils.randomInRange(1, Settings.getInstance().getMaxTime()+1), //time
                    Utils.randomInRange(1, Settings.getInstance().getBatteryCapacity()+1) //energy
@@ -45,7 +45,7 @@ public class JobGenerator {
         if(this.jobs == null){
             throw new NoGeneratedJobsException();
         }
-        for (Job job : jobs) {
+        for (WorkJob job : jobs) {
             System.out.println(job);
         }
     }

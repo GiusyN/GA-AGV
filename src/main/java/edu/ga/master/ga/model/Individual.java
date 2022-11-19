@@ -4,14 +4,24 @@
  */
 package edu.ga.master.ga.model;
 
+import java.util.List;
+
 /**
  *
  * @author sommovir
  */
-public sealed interface Job permits WorkJob,ReloadJob{
+public class Individual {
     
-    public int getId();
-    public int getTime();
-    public int getEnergy();
+    private List<AssignedJob> jobs = null;
+
+    public Individual() {
+        
+        
+    }
+    
+    
+    
+    
+    
     
 }

@@ -5,7 +5,7 @@
 package edu.ga.master.ga;
 
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
-import edu.ga.master.ga.model.JobGenerator;
+import edu.ga.master.ga.model.JobManager;
 import edu.ga.master.ga.utils.Settings;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +43,9 @@ public class MasterThesisGa {
 
         Settings.getInstance().setBatteryCapacity(3);
         Settings.getInstance().setMaxTime(5);
-        JobGenerator.getInstance().generateJobs(10);
+        JobManager.getInstance().generateJobs(10);
         try {
-            JobGenerator.getInstance().printJobs();
+            JobManager.getInstance().printJobs();
         } catch (NoGeneratedJobsException ex) {
             ex.printStackTrace();
         }
