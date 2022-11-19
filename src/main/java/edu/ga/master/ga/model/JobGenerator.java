@@ -5,6 +5,7 @@
 package edu.ga.master.ga.model;
 
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
+import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,13 @@ public class JobGenerator {
         super();
     }
     
-    public void generateJobs(int n, int maxTime, int capacity){
+    public void generateJobs(int n){
         jobs = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
            jobs.add(new Job(
                    i,  //id
-                   Utils.randomInRange(1, maxTime+1), //time
-                   Utils.randomInRange(1, capacity+1) //energy
+                   Utils.randomInRange(1, Settings.getInstance().getMaxTime()+1), //time
+                   Utils.randomInRange(1, Settings.getInstance().getBatteryCapacity()+1) //energy
            ));
         }
     }
