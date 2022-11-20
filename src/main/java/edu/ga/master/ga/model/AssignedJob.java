@@ -59,7 +59,8 @@ public class AssignedJob {
 
     @Override
     public String toString() {
-        return "AssignedJob{" + "job=" + job + ", agv=" + agv + ", startTime=" + startTime + ", endTime=" + endTime + '}';
+        String type = this.job instanceof ReloadJob ? "RELOAD" : "WORK";
+        return "AssignedJob{" + "job=" + job + "["+type+"], agv=" + agv + ", startTime=" + startTime + ", endTime=" + endTime + '}';
     }
    
 }

@@ -42,7 +42,7 @@ public final class ReloadJob implements Job{
 
     @Override
     public String toString() {
-        return "R"+this.id + " - Time: "+this.energy+", Energy: "+this.energy;
+        return "R"+this.id + " - Time: "+this.energy+", Energy: +"+this.energy+" ";
     }
     
 }

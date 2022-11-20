@@ -50,7 +50,7 @@ public final class WorkJob implements Job{
 
     @Override
     public String toString() {
-        return "J"+this.id + " - Time: "+this.time+", Energy: "+this.energy;
+        return "J"+this.id + " - Time: "+this.time+", Energy: -"+this.energy+" ";
     }
     
 }

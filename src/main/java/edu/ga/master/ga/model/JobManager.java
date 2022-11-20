@@ -5,6 +5,7 @@
 package edu.ga.master.ga.model;
 
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
+import edu.ga.master.ga.model.impl.FakeJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class JobManager {
     
     private static JobManager _instance = null;
     private List<WorkJob> jobs = null;
+    private JobGenerator jobGenerator = null;
     
     public static JobManager getInstance() {
         if (_instance == null) {
@@ -29,16 +31,18 @@ public class JobManager {
     private JobManager() {
         super();
     }
+
+    //DEPENDENCY INJECTION HERE
+    public void init(JobGenerator jobGenerator) {
+        this.jobGenerator = jobGenerator;
+    }
+    
     
     public void generateJobs(int n){
-        jobs = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-           jobs.add(new WorkJob(
-                   i,  //id
-                   Utils.randomInRange(1, Settings.getInstance().getMaxTime()+1), //time
-                   Utils.randomInRange(1, Settings.getInstance().getBatteryCapacity()+1) //energy
-           ));
+        if(this.jobGenerator == null){
+            this.jobGenerator = new FakeJobGenerator();
         }
+        this.jobs = jobGenerator.generate(n);
     }
 
     public List<WorkJob> getJobs() {

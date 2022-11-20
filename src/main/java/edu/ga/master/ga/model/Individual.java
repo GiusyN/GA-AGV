@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  *
@@ -62,6 +64,8 @@ public class Individual {
         for (int i = 1; i <= agvQuantity; i++) {
             energyMap.put(i, Settings.getInstance().getBatteryCapacity());
         }
+        System.out.println("AGV 1 BATTERY LEVEL :"+energyMap.get(1));
+        System.out.println("AGV 2 BATTERY LEVEL :"+energyMap.get(2));
 
         //reset starTime helper map
         for (int i = 1; i <= agvQuantity; i++) {
@@ -70,6 +74,8 @@ public class Individual {
 
         ListIterator<AssignedJob> iterator = jobs.listIterator();
         int index = 0;
+        List<Pair<AssignedJob, Integer>> reloads = new LinkedList<>();
+        
         while (iterator.hasNext()) {
             AssignedJob assignedJob = iterator.next();
             int agv = assignedJob.getAgv();
@@ -77,35 +83,50 @@ public class Individual {
 
             if (energyMap.get(agv) < energy) {  //se NON ho energia sufficiente per il prossimo job
                 //inserire il nodo di ricarica
-                int deltaEnergy = Settings.getInstance().getBatteryCapacity() - energyMap.get(agv);
-                int randomQuantityEnergyToReload = Utils.randomInRange(1, deltaEnergy + 1);
-                ReloadJob reloadJob = new ReloadJob(agv, randomQuantityEnergyToReload);
+                int energyMissingToFullCapacity = Settings.getInstance().getBatteryCapacity() - energyMap.get(agv);
+                int minimumEnergyForNextStep = energy - energyMap.get(agv);
+                int randomQuantityEnergyToReload = Utils.randomInRange(1, energyMissingToFullCapacity + 1);
+                int finalReload = randomQuantityEnergyToReload < minimumEnergyForNextStep ? minimumEnergyForNextStep : randomQuantityEnergyToReload;
+                ReloadJob reloadJob = new ReloadJob(agv, finalReload);
 //                int startTime = agvStartTimeMap.get(agv);
 //                int endTime = agvStartTimeMap.get(agv) + reloadJob.getTime();
-                int startTime = agvStartTimeMap.get(agv);
-                int endTime = agvStartTimeMap.get(agv) + reloadJob.getTime();
 
-                iterator.add(new AssignedJob(
+                reloads.add(new ImmutablePair<AssignedJob, Integer>(new AssignedJob(
                         reloadJob,
                         agv,
-                        startTime,
-                        endTime)
+                        -1,
+                        -1),        //LEFT of PAIR
+                        index)        //RIGHT of PAIR
                 );
-                agvStartTimeMap.put(agv, endTime);
+
+//                agvStartTimeMap.put(agv, endTime);
             } else {
                 if (assignedJob.getJob() instanceof ReloadJob) {
                     energyMap.put(agv, energyMap.get(agv) + energy);
                 } else {
                     energyMap.put(agv, energyMap.get(agv) - energy);
                 }
-                int startTime = agvStartTimeMap.get(agv);
-                int endTime = agvStartTimeMap.get(agv) + assignedJob.getJob().getTime();
-                assignedJob.setStartTime(startTime);
-                assignedJob.setEndTime(endTime);
-                agvStartTimeMap.put(agv, endTime);
+//                int startTime = agvStartTimeMap.get(agv);
+//                int endTime = agvStartTimeMap.get(agv) + assignedJob.getJob().getTime();
+//                assignedJob.setStartTime(startTime);
+//                assignedJob.setEndTime(endTime);
+//                agvStartTimeMap.put(agv, endTime);
             }
             index++;
-
+        }
+        
+        int shift = 0;
+        for (Pair<AssignedJob, Integer> reload : reloads) {
+            jobs.add(reload.getRight() + shift, reload.getLeft());
+            shift++;
+        }
+        for (AssignedJob assignedJob : jobs) {
+            int agv = assignedJob.getAgv();
+            int startTime = agvStartTimeMap.get(agv);
+            int endTime = agvStartTimeMap.get(agv) + assignedJob.getJob().getTime();
+            assignedJob.setStartTime(startTime);
+            assignedJob.setEndTime(endTime);
+            agvStartTimeMap.put(agv, endTime);
         }
 
     }
