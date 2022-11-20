@@ -62,7 +62,6 @@ public class Individual {
             agvStartTimeMap.put(randomAGV, endTime);
         }
 
-       
 
         //reset starTime helper map
         for (int i = 1; i <= agvQuantity; i++) {
@@ -126,13 +125,15 @@ public class Individual {
         
         for (AssignedJob assignedJob : jobs) {
             AGV agv = assignedJob.getAgv();
+            int penalty = 0;
             if(assignedJob.getJob() instanceof ReloadJob){
+                penalty=1;
                 agv.reload(assignedJob.getJob().getEnergy());
             }else{
                 agv.work(assignedJob.getJob().getEnergy());
             }
             int startTime = agvStartTimeMap.get(agv.getId());
-            int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime();
+            int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
             assignedJob.setStartTime(startTime);
             assignedJob.setEndTime(endTime);
             agvStartTimeMap.put(agv.getId(), endTime);

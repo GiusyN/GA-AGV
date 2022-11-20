@@ -14,6 +14,7 @@ public class Settings {
     private int agvQuantity = 2;
     private int batteryCapacity = 3;
     private int maxTime; //tempo massimo di elaborazione di un job
+    private int reloadPenalty = 1;
     
     public static Settings getInstance() {
         if (_instance == null) {
@@ -24,6 +25,14 @@ public class Settings {
     
     private Settings() {
         super();
+    }
+
+    public void setReloadPenalty(int reloadPenalty) {
+        this.reloadPenalty = reloadPenalty;
+    }
+
+    public int getReloadPenalty() {
+        return reloadPenalty;
     }
 
     public int getAgvQuantity() {
