@@ -4,6 +4,7 @@
  */
 package edu.ga.master.ga.model;
 
+import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 import java.util.Collection;
@@ -24,7 +25,7 @@ public class Individual {
 
     private LinkedList<AssignedJob> jobs = new LinkedList<>();
 
-    public Individual() {
+    public Individual() throws BatteryException {
 
         int agvQuantity = Settings.getInstance().getAgvQuantity();
         List<WorkJob> workJobs = JobManager.getInstance().getJobs();
@@ -94,7 +95,9 @@ public class Individual {
                         -1),        //LEFT of PAIR
                         index)        //RIGHT of PAIR
                 );
-                    agv.reload(energy);
+                    agv.reload(finalReload);
+                    agv.work(energy);
+                    
 //                agvStartTimeMap.put(agv, endTime);
             } else {
 //                if (assignedJob.getJob() instanceof ReloadJob) {

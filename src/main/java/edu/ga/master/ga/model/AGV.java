@@ -4,6 +4,11 @@
  */
 package edu.ga.master.ga.model;
 
+import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.exceptions.OverCapacityBatteryLevelException;
+import edu.ga.master.ga.exceptions.TooLowBatteryLevelException;
+import edu.ga.master.ga.utils.Settings;
+
 /**
  *
  * @author sommovir
@@ -16,17 +21,19 @@ public class AGV {
     public AGV() {
     }
 
-    public AGV(int id, int batteryLevel) {
+    public AGV(int id, int batteryLevel) throws BatteryException {
         this.id = id;
-        this.batteryLevel = batteryLevel;
+        setBatteryLevel(batteryLevel);
     }
     
-    public void work(int energyConsumed){
-        this.batteryLevel-=energyConsumed;
+    public void work(int energyConsumed) throws BatteryException{
+        int newBatteryLevel = this.batteryLevel - energyConsumed;
+        this.setBatteryLevel(newBatteryLevel);
     }
     
-    public void reload(int amountOfEnergy){
-        this.batteryLevel+=amountOfEnergy;
+    public void reload(int amountOfEnergy) throws BatteryException{
+        int newBatteryLevel = this.batteryLevel + amountOfEnergy;
+        this.setBatteryLevel(newBatteryLevel);
     }
 
     public int getId() {
@@ -41,7 +48,14 @@ public class AGV {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
+    public final void setBatteryLevel(int batteryLevel) throws TooLowBatteryLevelException, OverCapacityBatteryLevelException {
+        if(batteryLevel<0){
+            System.out.println("AGV WITH ERROR: "+this.id);
+            throw new TooLowBatteryLevelException(batteryLevel);
+        }else if(batteryLevel > Settings.getInstance().getBatteryCapacity()){
+            System.out.println("AGV WITH ERROR: "+this.id);
+            throw new OverCapacityBatteryLevelException(batteryLevel);
+        }
         this.batteryLevel = batteryLevel;
     }
 
