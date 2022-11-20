@@ -9,14 +9,6 @@ import edu.ga.master.ga.model.Individual;
 import edu.ga.master.ga.model.JobManager;
 import edu.ga.master.ga.model.impl.FakeJobGenerator;
 import edu.ga.master.ga.utils.Settings;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jenetics.BitChromosome;
-import org.jenetics.BitGene;
-import org.jenetics.Genotype;
-import org.jenetics.engine.Engine;
-import org.jenetics.engine.EvolutionResult;
-import org.jenetics.util.Factory;
 
 /**
  *
@@ -27,8 +19,6 @@ public class MasterThesisGa {
     public static void main(String[] args) {
         System.out.println("Hello World!");
         System.out.println("Ciao Luca come va tutt'appost ?");
-
-
 
         Settings.getInstance().setBatteryCapacity(3);
         Settings.getInstance().setMaxTime(5);

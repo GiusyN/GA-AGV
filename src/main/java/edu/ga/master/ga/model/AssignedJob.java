@@ -11,14 +11,14 @@ package edu.ga.master.ga.model;
 public class AssignedJob {
     
     private Job job;
-    private int agv;
+    private AGV agv;
     private int startTime;
     private int endTime;
 
     public AssignedJob() {
     }
 
-    public AssignedJob(Job job, int agv, int startTime, int endTime) {
+    public AssignedJob(Job job, AGV agv, int startTime, int endTime) {
         this.job = job;
         this.agv = agv;
         this.startTime = startTime;
@@ -33,11 +33,11 @@ public class AssignedJob {
         this.job = job;
     }
 
-    public int getAgv() {
+    public AGV getAgv() {
         return agv;
     }
 
-    public void setAgv(int agv) {
+    public void setAgv(AGV agv) {
         this.agv = agv;
     }
 
@@ -60,7 +60,7 @@ public class AssignedJob {
     @Override
     public String toString() {
         String type = this.job instanceof ReloadJob ? "RELOAD" : "WORK";
-        return "AssignedJob{" + "job=" + job + "["+type+"], agv=" + agv + ", startTime=" + startTime + ", endTime=" + endTime + '}';
+        return "AssignedJob{" + "job=" + job + "["+type+"], \tagv = " + agv + ", startTime=" + startTime + ", endTime=" + endTime + '}';
     }
    
 }

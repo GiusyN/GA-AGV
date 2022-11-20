@@ -6,6 +6,7 @@ package edu.ga.master.ga.model;
 
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,38 +35,33 @@ public class Individual {
         //    2      0
         //    3      0
         //    4      0
+        
+        Map<Integer, AGV> agvByIDMap = new HashMap<>();
 
         for (int i = 1; i <= agvQuantity; i++) {
             agvStartTimeMap.put(i, 0);
+            AGV agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
+            agvByIDMap.put(agv.getId(), agv);
         }
-
+        
+        
+        
         for (WorkJob workJob : workJobs) {
             //TODO: assicurarsi che tutti i robottini siano stati usati nella randomizzazione iniziale
             int randomAGV = Utils.randomInRange(1, agvQuantity + 1);
             int startTime = agvStartTimeMap.get(randomAGV);
             int endTime = agvStartTimeMap.get(randomAGV) + workJob.getTime();
+            AGV agv = agvByIDMap.get(randomAGV);
             jobs.add(new AssignedJob(
                     workJob,
-                    randomAGV,
+                    agv,
                     startTime,
                     endTime
             ));
             agvStartTimeMap.put(randomAGV, endTime);
         }
 
-        //adding reloading events
-        //   agv    capacity
-        Map<Integer, Integer> energyMap = new HashMap<>();
-        //    1      3
-        //    2      3
-        //    3      3
-        //    4      3
-
-        for (int i = 1; i <= agvQuantity; i++) {
-            energyMap.put(i, Settings.getInstance().getBatteryCapacity());
-        }
-        System.out.println("AGV 1 BATTERY LEVEL :"+energyMap.get(1));
-        System.out.println("AGV 2 BATTERY LEVEL :"+energyMap.get(2));
+       
 
         //reset starTime helper map
         for (int i = 1; i <= agvQuantity; i++) {
@@ -78,34 +74,34 @@ public class Individual {
         
         while (iterator.hasNext()) {
             AssignedJob assignedJob = iterator.next();
-            int agv = assignedJob.getAgv();
+            AGV agv = assignedJob.getAgv();
             int energy = assignedJob.getJob().getEnergy();
 
-            if (energyMap.get(agv) < energy) {  //se NON ho energia sufficiente per il prossimo job
+            if (agv.getBatteryLevel() < energy) {  //se NON ho energia sufficiente per il prossimo job
                 //inserire il nodo di ricarica
-                int energyMissingToFullCapacity = Settings.getInstance().getBatteryCapacity() - energyMap.get(agv);
-                int minimumEnergyForNextStep = energy - energyMap.get(agv);
+                int energyMissingToFullCapacity = Settings.getInstance().getBatteryCapacity() - agv.getBatteryLevel();
+                int minimumEnergyForNextStep = energy - agv.getBatteryLevel();
                 int randomQuantityEnergyToReload = Utils.randomInRange(1, energyMissingToFullCapacity + 1);
                 int finalReload = randomQuantityEnergyToReload < minimumEnergyForNextStep ? minimumEnergyForNextStep : randomQuantityEnergyToReload;
-                ReloadJob reloadJob = new ReloadJob(agv, finalReload);
+                ReloadJob reloadJob = new ReloadJob(agv.getId(), finalReload);
 //                int startTime = agvStartTimeMap.get(agv);
 //                int endTime = agvStartTimeMap.get(agv) + reloadJob.getTime();
 
                 reloads.add(new ImmutablePair<AssignedJob, Integer>(new AssignedJob(
                         reloadJob,
-                        agv,
+                        assignedJob.getAgv(),
                         -1,
                         -1),        //LEFT of PAIR
                         index)        //RIGHT of PAIR
                 );
-
+                    agv.reload(energy);
 //                agvStartTimeMap.put(agv, endTime);
             } else {
-                if (assignedJob.getJob() instanceof ReloadJob) {
-                    energyMap.put(agv, energyMap.get(agv) + energy);
-                } else {
-                    energyMap.put(agv, energyMap.get(agv) - energy);
-                }
+//                if (assignedJob.getJob() instanceof ReloadJob) {
+//                    agv.reload(energy);
+//                } else {
+                    agv.work(energy);
+//                }
 //                int startTime = agvStartTimeMap.get(agv);
 //                int endTime = agvStartTimeMap.get(agv) + assignedJob.getJob().getTime();
 //                assignedJob.setStartTime(startTime);
@@ -120,22 +116,33 @@ public class Individual {
             jobs.add(reload.getRight() + shift, reload.getLeft());
             shift++;
         }
+        //reset Battery:
+        for (AGV agv : agvByIDMap.values()) {
+            agv.setBatteryLevel(Settings.getInstance().getBatteryCapacity());
+        }
+        
         for (AssignedJob assignedJob : jobs) {
-            int agv = assignedJob.getAgv();
-            int startTime = agvStartTimeMap.get(agv);
-            int endTime = agvStartTimeMap.get(agv) + assignedJob.getJob().getTime();
+            AGV agv = assignedJob.getAgv();
+            if(assignedJob.getJob() instanceof ReloadJob){
+                agv.reload(assignedJob.getJob().getEnergy());
+            }else{
+                agv.work(assignedJob.getJob().getEnergy());
+            }
+            int startTime = agvStartTimeMap.get(agv.getId());
+            int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime();
             assignedJob.setStartTime(startTime);
             assignedJob.setEndTime(endTime);
-            agvStartTimeMap.put(agv, endTime);
+            agvStartTimeMap.put(agv.getId(), endTime);
+            System.out.println(assignedJob);
         }
 
     }
 
     public void print() {
-        System.out.println("INDIVIDUAL: ");
-        for (AssignedJob job : jobs) {
-            System.out.println(job);
-        }
+//        System.out.println("INDIVIDUAL: ");
+//        for (AssignedJob job : jobs) {
+//            System.out.println(job);
+//        }
         System.out.println("----------------------------------");
     }
 

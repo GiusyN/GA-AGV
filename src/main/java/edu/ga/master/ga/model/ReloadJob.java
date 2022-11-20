@@ -7,22 +7,22 @@ package edu.ga.master.ga.model;
  */
 public final class ReloadJob implements Job{
     
-    private int id;
+    private int agvID;
     private int energy;
 
-    public ReloadJob(int id, int energy) {
-        this.id = id;
+    public ReloadJob(int agvID, int energy) {
+        this.agvID = agvID;
         this.energy = energy;
     }
 
     
     @Override
     public int getId() {
-        return id;
+        return agvID;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.agvID = id;
     }
 
     @Override
@@ -42,7 +42,7 @@ public final class ReloadJob implements Job{
 
     @Override
     public String toString() {
-        return "R"+this.id + " - Time: "+this.energy+", Energy: +"+this.energy+" ";
+        return "R"+this.agvID + " - Time: "+this.energy+", Energy: +"+this.energy+" ";
     }
     
 }
