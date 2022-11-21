@@ -15,6 +15,9 @@ public class Settings {
     private int batteryCapacity = 3;
     private int maxTime; //tempo massimo di elaborazione di un job
     private int reloadPenalty = 1;
+    public static final float TETHA = 217.1f;
+    public static final float K1 = 2/3; //costante per il tempo
+    public static final float K2 = 1/3; //costante per il numero di AGV
     
     public static Settings getInstance() {
         if (_instance == null) {
@@ -58,9 +61,5 @@ public class Settings {
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
     }
-    
-    
-    
-    
     
 }

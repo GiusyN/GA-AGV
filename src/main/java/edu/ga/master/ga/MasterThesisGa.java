@@ -24,7 +24,7 @@ public class MasterThesisGa {
             System.out.println("Hello World!");
             System.out.println("Ciao Luca come va tutt'appost ?");
             
-            Settings.getInstance().setBatteryCapacity(5);
+            Settings.getInstance().setBatteryCapacity(3);
             Settings.getInstance().setMaxTime(5);
             JobManager.getInstance().init(new FakeJobGenerator());
             JobManager.getInstance().generateJobs(10);
@@ -33,7 +33,9 @@ public class MasterThesisGa {
             } catch (NoGeneratedJobsException ex) {
                 ex.printStackTrace();
             }
-            
+            System.out.println("------------------------------------------");
+            System.out.println("Current Battery Capacity = "+Settings.getInstance().getBatteryCapacity());
+            System.out.println("------------------------------------------");
             Individual individual = new Individual();
             individual.print();
             

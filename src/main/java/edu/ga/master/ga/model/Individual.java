@@ -22,8 +22,11 @@ import org.apache.commons.lang3.tuple.Pair;
  * @author sommovir
  */
 public class Individual {
-
+    
+    private float fitness = -1f;
     private LinkedList<AssignedJob> jobs = new LinkedList<>();
+    private boolean dirty = false;
+    private int makespan = -1;
 
     public Individual() throws BatteryException {
 
@@ -136,6 +139,9 @@ public class Individual {
             int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
             assignedJob.setStartTime(startTime);
             assignedJob.setEndTime(endTime);
+            if(endTime > this.makespan){
+                this.makespan = endTime;
+            }
             agvStartTimeMap.put(agv.getId(), endTime);
             System.out.println(assignedJob);
         }
@@ -143,11 +149,30 @@ public class Individual {
     }
 
     public void print() {
-//        System.out.println("INDIVIDUAL: ");
-//        for (AssignedJob job : jobs) {
-//            System.out.println(job);
-//        }
         System.out.println("----------------------------------");
+        System.out.println("MAKESPAN: "+this.getMakespan());
+        System.out.println("----------------------------------");
+    }
+    
+    private void calculateMakespan(){
+        //ricalcola il makespan
+        //TODO
+        this.dirty = false;
+    }
+    
+    public int getMakespan(){
+        if(dirty){
+           calculateMakespan();
+        }
+        return this.makespan;
+    }
+    
+    public void calculateFitness(){
+        //this.fitness = Settings.K1 * t + Settings.K2*Settings.TETHA*num_AGV
+    }
+    
+    public float getFitness(){
+        return this.fitness;
     }
 
 }
