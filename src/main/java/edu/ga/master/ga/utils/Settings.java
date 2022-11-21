@@ -11,13 +11,13 @@ package edu.ga.master.ga.utils;
 public class Settings {
     
     private static Settings _instance = null;
-    private int agvQuantity = 2;
+    private int agvQuantity = 4;
     private int batteryCapacity = 3;
     private int maxTime; //tempo massimo di elaborazione di un job
     private int reloadPenalty = 1;
-    public static final float TETHA = 217.1f;
-    public static final float K1 = 2/3; //costante per il tempo
-    public static final float K2 = 1/3; //costante per il numero di AGV
+    public static final float TETHA = 30f;//217.1f;
+    public static final float K1 = 2f/3f; //costante per il tempo
+    public static final float K2 = 1f/3f; //costante per il numero di AGV
     
     public static Settings getInstance() {
         if (_instance == null) {

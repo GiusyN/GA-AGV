@@ -27,10 +27,10 @@ public class Individual {
     private LinkedList<AssignedJob> jobs = new LinkedList<>();
     private boolean dirty = false;
     private int makespan = -1;
+    private int numAGV;
 
-    public Individual() throws BatteryException {
-
-        int agvQuantity = Settings.getInstance().getAgvQuantity();
+    public Individual(int numAGV) throws BatteryException {
+        this.numAGV = numAGV;
         List<WorkJob> workJobs = JobManager.getInstance().getJobs();
 
         //init startTime per AGV
@@ -42,7 +42,7 @@ public class Individual {
         
         Map<Integer, AGV> agvByIDMap = new HashMap<>();
 
-        for (int i = 1; i <= agvQuantity; i++) {
+        for (int i = 1; i <= this.numAGV; i++) {
             agvStartTimeMap.put(i, 0);
             AGV agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
             agvByIDMap.put(agv.getId(), agv);
@@ -52,7 +52,7 @@ public class Individual {
         
         for (WorkJob workJob : workJobs) {
             //TODO: assicurarsi che tutti i robottini siano stati usati nella randomizzazione iniziale
-            int randomAGV = Utils.randomInRange(1, agvQuantity + 1);
+            int randomAGV = Utils.randomInRange(1, this.numAGV + 1);
             int startTime = agvStartTimeMap.get(randomAGV);
             int endTime = agvStartTimeMap.get(randomAGV) + workJob.getTime();
             AGV agv = agvByIDMap.get(randomAGV);
@@ -67,7 +67,7 @@ public class Individual {
 
 
         //reset starTime helper map
-        for (int i = 1; i <= agvQuantity; i++) {
+        for (int i = 1; i <= this.numAGV; i++) {
             agvStartTimeMap.put(i, 0);
         }
 
@@ -151,6 +151,7 @@ public class Individual {
     public void print() {
         System.out.println("----------------------------------");
         System.out.println("MAKESPAN: "+this.getMakespan());
+        System.out.println(" FITNESS: "+this.getFitness());
         System.out.println("----------------------------------");
     }
     
@@ -168,7 +169,7 @@ public class Individual {
     }
     
     public void calculateFitness(){
-        //this.fitness = Settings.K1 * t + Settings.K2*Settings.TETHA*num_AGV
+        this.fitness = Settings.K1 * (float)getMakespan() + Settings.K2*Settings.TETHA*(float)this.numAGV;
     }
     
     public float getFitness(){

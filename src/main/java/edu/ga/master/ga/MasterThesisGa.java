@@ -9,6 +9,7 @@ import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
 import edu.ga.master.ga.model.Individual;
 import edu.ga.master.ga.model.JobManager;
 import edu.ga.master.ga.model.impl.FakeJobGenerator;
+import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +27,7 @@ public class MasterThesisGa {
             
             Settings.getInstance().setBatteryCapacity(3);
             Settings.getInstance().setMaxTime(5);
-            JobManager.getInstance().init(new FakeJobGenerator());
+            JobManager.getInstance().init(new RealJobGenerator());
             JobManager.getInstance().generateJobs(10);
             try {
                 JobManager.getInstance().printJobs();
@@ -36,7 +37,8 @@ public class MasterThesisGa {
             System.out.println("------------------------------------------");
             System.out.println("Current Battery Capacity = "+Settings.getInstance().getBatteryCapacity());
             System.out.println("------------------------------------------");
-            Individual individual = new Individual();
+            Individual individual = new Individual(Settings.getInstance().getAgvQuantity());
+            individual.calculateFitness();
             individual.print();
             
         } catch (BatteryException ex) {
