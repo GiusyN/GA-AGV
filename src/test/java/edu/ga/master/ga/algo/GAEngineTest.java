@@ -183,12 +183,12 @@ class GAEngineTest {
             System.out.println("---------------------- kid1 ----------------------");
             for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
                 System.out.println(kid1.getAssignedJobs().get(i));
-                agvKID1.add(dad.getAssignedJobs().get(i).getAgv());
+                agvKID1.add(kid1.getAssignedJobs().get(i).getAgv());
             }
             System.out.println("---------------------- kid2 ----------------------");
             for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
                 System.out.println(kid2.getAssignedJobs().get(i));
-                agvKID2.add(dad.getAssignedJobs().get(i).getAgv());
+                agvKID2.add(kid2.getAssignedJobs().get(i).getAgv());
             }
 
 
@@ -200,7 +200,7 @@ class GAEngineTest {
                     new AGV(1, 3),
                     new AGV(2, 3),
                     new AGV(2, 3));
-
+            
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
 

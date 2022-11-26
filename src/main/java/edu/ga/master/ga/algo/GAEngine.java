@@ -1,12 +1,15 @@
 package edu.ga.master.ga.algo;
 
+import edu.ga.master.ga.model.AGV;
 import edu.ga.master.ga.model.AssignedJob;
 import edu.ga.master.ga.model.Individual;
-import edu.ga.master.ga.model.Job;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 //singleton
 public class GAEngine {
@@ -39,7 +42,18 @@ public class GAEngine {
         }
     }
 
-    public Pair<Individual,Individual> crossover(Individual dad, Individual mum){
+    public Pair<Individual,Individual> crossover(@NotNull Individual dad, @NotNull Individual mum){
+
+        List<AGV> agvsDad = new ArrayList<>(dad.getAssignedJobs().size()*2);
+        List<AGV> agvsMum = new ArrayList<>(mum.getAssignedJobs().size()*2);
+
+        //fill agvs with all agvs
+        for (int i = 0; i < dad.getAssignedJobs().size(); i++) {
+            agvsDad.add(dad.getAssignedJobs().get(i).getAgv());
+        }
+        for (int i = 0; i < mum.getAssignedJobs().size(); i++) {
+            agvsMum.add(mum.getAssignedJobs().get(i).getAgv());
+        }
 
         LinkedList<AssignedJob> daddyAssignedJobs = dad.getAssignedJobs();
         LinkedList<AssignedJob> mummyAssignedJobs = mum.getAssignedJobs();
@@ -69,13 +83,18 @@ public class GAEngine {
         int swapPoint = child1AssignedJobs.size()/2;
 
         //swap the first half of assigned agv from the kid1 to the kid2
+        System.out.println("swapPoint: " + swapPoint);
+
         for (int i = 0; i < swapPoint; i++) {
-            kid2.getAssignedJobs().get(i).setAgv(kid1.getAssignedJobs().get(i).getAgv());
+            kid1.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
+            kid2.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
         }
         for (int i = swapPoint; i < child1AssignedJobs.size(); i++) {
-            kid1.getAssignedJobs().get(i).setAgv(kid2.getAssignedJobs().get(i).getAgv());
+            kid1.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
+            kid2.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
         }
 
+        System.out.println("************************** END CROSSOVER **************************");
         return new ImmutablePair<>(kid1,kid2);
     }
 
