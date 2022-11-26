@@ -8,7 +8,7 @@ package edu.ga.master.ga.model;
  *
  * @author giusy
  */
-public final class WorkJob implements Job{
+public final class WorkJob implements Job, Comparable<WorkJob> {
     
     private int id;
     private int time;
@@ -52,5 +52,11 @@ public final class WorkJob implements Job{
     public String toString() {
         return "J"+this.id + " - Time: "+this.time+", Energy: -"+this.energy+" ";
     }
-    
+
+
+    //compare by time
+    @Override
+    public int compareTo(WorkJob o) {
+        return this.time - o.time;
+    }
 }

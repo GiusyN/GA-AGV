@@ -46,10 +46,13 @@ public class MasterThesisGa {
             System.out.println(" creation of population of size 100");
             System.out.println("********************************************");
             Population population = new Population.Builder(100)
-                    .distribution(Population.DISTRIBUTION.RANDOM)
+                    .distribution(Population.DISTRIBUTION.EQUAL)
                     .minimumAGV(1)
                     .maximumAGV(6)
                     .build();
+
+            population.print(false);
+
 
         } catch (BatteryException ex) {
             ex.printStackTrace();

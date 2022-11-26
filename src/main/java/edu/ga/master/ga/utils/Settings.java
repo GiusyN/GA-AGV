@@ -11,7 +11,7 @@ package edu.ga.master.ga.utils;
 public class Settings {
     
     private static Settings _instance = null;
-    private int agvQuantity = 4;
+    private int agvQuantity = 5;
     private int batteryCapacity = 3;
     private int maxTime; //tempo massimo di elaborazione di un job
     private int reloadPenalty = 1;
