@@ -16,62 +16,89 @@ public class GAEngine {
 
     private static GAEngine instance;
 
-    private GAEngine(){
+    private GAEngine() {
 
     }
 
-    public static GAEngine getInstance(){
-        if(instance == null){
+    public static GAEngine getInstance() {
+        if (instance == null) {
             instance = new GAEngine();
         }
         return instance;
     }
 
-    public void run(){
+    public void run() {
 
     }
 
+    //check if a list of assigned job contains job id ducplicates
+    public boolean checkDuplicateJobId(@NotNull List<AssignedJob> assignedJobs) {
+        List<Integer> jobIds = new ArrayList<>();
+        for (AssignedJob assignedJob : assignedJobs) {
+            if (jobIds.contains(assignedJob.getJob().getId())) {
+                return true;
+            }
+            jobIds.add(assignedJob.getJob().getId());
+        }
+        return false;
+    }
+
+
     //controlla che una lista di AssignedJob non contenga duplicati
-    public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2, int start, int end){
+    public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2, int start, int end) {
         System.out.println("start: " + start + " end: " + end);
-        for (int i = start; i <= end; i++) {
-            while(true) {
-                int duplicates = 0;
-                for (int j = 0; j < child1.size(); j++) {
+
+
+        do {
+            for (int i = start; i < end; i++) {
+                for (int k = 0; k < child1.size(); k++) {
+
                     //continue if j is between j interval
-                    if (j >= start && j <= end) {
+                    if (k >= start && k < end) {
                         continue;
                     }
-                    if (child1.get(i).getJob().getId() == child1.get(j).getJob().getId()) {
-                        child1.get(j).setJob(child2.get(i).getJob());
-                        duplicates++;
+                    if (child1.get(i).getJob().getId() == child1.get(k).getJob().getId()) {
+                        child1.get(k).setJob(child2.get(i).getJob());
+                        break;
                     }
                 }
-                if(duplicates == 0){
-                    break;
-                }
             }
-        }
+        }while (checkDuplicateJobId(child1));
+        //check if there are duplicates
+
+//        for (int i = 0; i < child1.size(); i++) {
+//            for (int j = 0; j < child1.size(); j++) {
+//                if (i == j) {
+//                    continue;
+//                }
+//                if (child1.get(i).getJob().getId() == child1.get(j).getJob().getId()) {
+//                    System.out.println("duplicate found");
+//                    child1.get(i).setJob(child2.get(j).getJob());
+//                }
+//            }
+//        }
+
+
         //CHILD 1
         System.out.println("---------------------- child1 ----------------------");
-        for (AssignedJob job: child1) {
-            System.out.println("JOB: "+job);
+        for (AssignedJob job : child1) {
+            System.out.println("JOB: " + job);
 
         }
         //CHILD 2
         System.out.println("---------------------- child2 ----------------------");
-        for (AssignedJob job: child2) {
-            System.out.println("JOB: "+job);
+        for (AssignedJob job : child2) {
+            System.out.println("JOB: " + job);
         }
 
         System.out.println("----------------------------------------------------");
 
     }
 
-    public Pair<Individual,Individual> crossover(@NotNull Individual dad, @NotNull Individual mum){
+    public Pair<Individual, Individual> crossover(@NotNull Individual dad, @NotNull Individual mum) {
 
-        List<AGV> agvsDad = new ArrayList<>(dad.getAssignedJobs().size()*2);
-        List<AGV> agvsMum = new ArrayList<>(mum.getAssignedJobs().size()*2);
+        List<AGV> agvsDad = new ArrayList<>(dad.getAssignedJobs().size() * 2);
+        List<AGV> agvsMum = new ArrayList<>(mum.getAssignedJobs().size() * 2);
 
         //fill agvs with all agvs
         for (int i = 0; i < dad.getAssignedJobs().size(); i++) {
@@ -85,34 +112,45 @@ public class GAEngine {
         LinkedList<AssignedJob> daddyAssignedJobs = dad.getAssignedJobs();
         LinkedList<AssignedJob> mummyAssignedJobs = mum.getAssignedJobs();
 
-        int startCrossPoint =    daddyAssignedJobs.size() / 3;
-        int endCrossPoint   = 2*(daddyAssignedJobs.size() / 3);
+        int startCrossPoint = daddyAssignedJobs.size() / 3;
+        int endCrossPoint = 2 * (daddyAssignedJobs.size() / 3);
 
         LinkedList<AssignedJob> child1AssignedJobs = new LinkedList<>();
         LinkedList<AssignedJob> child2AssignedJobs = new LinkedList<>();
 
         //calcola la sottostringa centrale
         for (int i = 0; i < daddyAssignedJobs.size(); i++) {
-            if(i >= startCrossPoint && i <= endCrossPoint){
+            if (i >= startCrossPoint && i < endCrossPoint) {
                 child1AssignedJobs.add(mummyAssignedJobs.get(i));
                 child2AssignedJobs.add(daddyAssignedJobs.get(i));
-            }else{
+            } else {
                 child1AssignedJobs.add(daddyAssignedJobs.get(i));
                 child2AssignedJobs.add(mummyAssignedJobs.get(i));
             }
         }
 
+        //print child1
+        System.out.println("---------------------- child1 AFTER SWAP ----------------------");
+        for (AssignedJob job : child1AssignedJobs) {
+            System.out.println("JOB: " + job);
+        }
+        //print child2
+        System.out.println("---------------------- child2 AFTER SWAP ----------------------");
+        for (AssignedJob job : child2AssignedJobs) {
+            System.out.println("JOB: " + job);
+        }
+
         //TODO test swap ^
 
-        fixDuplicate(child1AssignedJobs,child2AssignedJobs,startCrossPoint,endCrossPoint);
-        fixDuplicate(child2AssignedJobs,child1AssignedJobs,startCrossPoint,endCrossPoint);
+        fixDuplicate(child1AssignedJobs, child2AssignedJobs, startCrossPoint, endCrossPoint);
+        fixDuplicate(child2AssignedJobs, child1AssignedJobs, startCrossPoint, endCrossPoint);
 
         Individual kid1 = Individual.generate(child1AssignedJobs);
         Individual kid2 = Individual.generate(child2AssignedJobs);
 
         //------------------------------------------------------------------------------------------
         //opero il crossover sugli agv
-        int swapPoint = child1AssignedJobs.size()/2;
+        int swapPoint = child1AssignedJobs.size() / 2;
 
         //swap the first half of assigned agv from the kid1 to the kid2
         System.out.println("swapPoint: " + swapPoint);
@@ -127,13 +165,13 @@ public class GAEngine {
         }
 
         System.out.println("************************** END CROSSOVER **************************");
-        return new ImmutablePair<>(kid1,kid2);
+        return new ImmutablePair<>(kid1, kid2);
     }
 
 
     public static void main(String[] args) {
-        System.out.println("8/3 = " + 8/3);
-        System.out.println("2*(8/3) = " + 2*(8/3));
+        System.out.println("8/3 = " + 8 / 3);
+        System.out.println("2*(8/3) = " + 2 * (8 / 3));
     }
 
 
