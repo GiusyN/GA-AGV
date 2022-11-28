@@ -10,6 +10,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -281,9 +282,6 @@ class GAEngineTest {
                     new AGV(1, 3),
                     new AGV(2, 3),
                     new AGV(2, 3));
-
-
-
 
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
