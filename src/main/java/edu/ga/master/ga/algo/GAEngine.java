@@ -32,14 +32,40 @@ public class GAEngine {
     }
 
     //controlla che una lista di AssignedJob non contenga duplicati
-    public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2){
-        for (int i = 0; i < child1.size(); i++) {
-            for (int j = i+1; j < child1.size(); j++) {
-                if(child1.get(i).getJob().getId() == child1.get(j).getJob().getId()){
-                    child1.get(j).setJob(child2.get(i).getJob());
+    public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2, int start, int end){
+        System.out.println("start: " + start + " end: " + end);
+        for (int i = start; i <= end; i++) {
+            while(true) {
+                int duplicates = 0;
+                for (int j = 0; j < child1.size(); j++) {
+                    //continue if j is between j interval
+                    if (j >= start && j <= end) {
+                        continue;
+                    }
+                    if (child1.get(i).getJob().getId() == child1.get(j).getJob().getId()) {
+                        child1.get(j).setJob(child2.get(i).getJob());
+                        duplicates++;
+                    }
+                }
+                if(duplicates == 0){
+                    break;
                 }
             }
         }
+        //CHILD 1
+        System.out.println("---------------------- child1 ----------------------");
+        for (AssignedJob job: child1) {
+            System.out.println("JOB: "+job);
+
+        }
+        //CHILD 2
+        System.out.println("---------------------- child2 ----------------------");
+        for (AssignedJob job: child2) {
+            System.out.println("JOB: "+job);
+        }
+
+        System.out.println("----------------------------------------------------");
+
     }
 
     public Pair<Individual,Individual> crossover(@NotNull Individual dad, @NotNull Individual mum){
@@ -55,6 +81,7 @@ public class GAEngine {
             agvsMum.add(mum.getAssignedJobs().get(i).getAgv());
         }
 
+        //---------------------------------CROSSOVER JOBS---------------------------------
         LinkedList<AssignedJob> daddyAssignedJobs = dad.getAssignedJobs();
         LinkedList<AssignedJob> mummyAssignedJobs = mum.getAssignedJobs();
 
@@ -64,22 +91,27 @@ public class GAEngine {
         LinkedList<AssignedJob> child1AssignedJobs = new LinkedList<>();
         LinkedList<AssignedJob> child2AssignedJobs = new LinkedList<>();
 
+        //calcola la sottostringa centrale
         for (int i = 0; i < daddyAssignedJobs.size(); i++) {
             if(i >= startCrossPoint && i <= endCrossPoint){
-                child1AssignedJobs.add(daddyAssignedJobs.get(i));
-                child2AssignedJobs.add(mummyAssignedJobs.get(i));
-            }else{
                 child1AssignedJobs.add(mummyAssignedJobs.get(i));
                 child2AssignedJobs.add(daddyAssignedJobs.get(i));
+            }else{
+                child1AssignedJobs.add(daddyAssignedJobs.get(i));
+                child2AssignedJobs.add(mummyAssignedJobs.get(i));
             }
         }
 
-        fixDuplicate(child1AssignedJobs,child2AssignedJobs);
-        fixDuplicate(child2AssignedJobs,child1AssignedJobs);
+        //TODO test swap ^
+
+        fixDuplicate(child1AssignedJobs,child2AssignedJobs,startCrossPoint,endCrossPoint);
+        fixDuplicate(child2AssignedJobs,child1AssignedJobs,startCrossPoint,endCrossPoint);
 
         Individual kid1 = Individual.generate(child1AssignedJobs);
         Individual kid2 = Individual.generate(child2AssignedJobs);
 
+        //------------------------------------------------------------------------------------------
+        //opero il crossover sugli agv
         int swapPoint = child1AssignedJobs.size()/2;
 
         //swap the first half of assigned agv from the kid1 to the kid2
@@ -96,6 +128,12 @@ public class GAEngine {
 
         System.out.println("************************** END CROSSOVER **************************");
         return new ImmutablePair<>(kid1,kid2);
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println("8/3 = " + 8/3);
+        System.out.println("2*(8/3) = " + 2*(8/3));
     }
 
 

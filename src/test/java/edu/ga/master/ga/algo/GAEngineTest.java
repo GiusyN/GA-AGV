@@ -2,10 +2,7 @@ package edu.ga.master.ga.algo;
 
 
 import edu.ga.master.ga.exceptions.BatteryException;
-import edu.ga.master.ga.model.AGV;
-import edu.ga.master.ga.model.AssignedJob;
-import edu.ga.master.ga.model.Individual;
-import edu.ga.master.ga.model.WorkJob;
+import edu.ga.master.ga.model.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -38,19 +35,23 @@ class GAEngineTest {
         LinkedList<AssignedJob> child1 = new LinkedList<>();
         LinkedList<AssignedJob> child2 = new LinkedList<>();
         try {
-            child1.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(4, 7, 3), new AGV(1, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(3, 5, 2), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(3, 1, 4), new AGV(2, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(6, 7, 3), new AGV(1, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(2, 5, 2), new AGV(2, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(8, 1, 4), new AGV(2, 3), 0, 0));
             child1.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(1, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(1, 2, 2), new AGV(1, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(1, 3), 0, 0));
 
-            child2.add(new AssignedJob(new WorkJob(1, 2, 1), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(1, 2, 1), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(3, 5, 2), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(4, 7, 3), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(2, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(6, 2, 1), new AGV(1, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(8, 9, 5), new AGV(1, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(7, 2, 1), new AGV(2, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(1, 5, 2), new AGV(1, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(3, 7, 3), new AGV(2, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(2, 2, 2), new AGV(2, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
+            child2.add(new AssignedJob(new WorkJob(5, 2, 2), new AGV(2, 3), 0, 0));
 
             //print all elements of child1
             System.out.println("---------------------- child1 ----------------------");
@@ -61,61 +62,11 @@ class GAEngineTest {
             for (int i = 0; i < child2.size(); i++) {
                 System.out.println(child2.get(i));
             }
-            GAEngine.getInstance().fixDuplicate(child1, child2);
-            GAEngine.getInstance().fixDuplicate(child2, child1);
 
-            System.out.println("AFTER FIX DUPLICATE");
-            System.out.println("---------------------- child1 ----------------------");
-            for (int i = 0; i < child1.size(); i++) {
-                System.out.println(child1.get(i));
-            }
-            System.out.println("---------------------- child2 ----------------------");
-            for (int i = 0; i < child2.size(); i++) {
-                System.out.println(child2.get(i));
-            }
-
-            assertFalse(checkDuplicate(child1));
-            assertFalse(checkDuplicate(child2));
-
-
-        } catch (BatteryException e) {
-            assertTrue(false, "non dovresti essere qui . .");
-        }
-
-    }
-
-
-    @Test
-    void fixDuplicate2() {
-
-        LinkedList<AssignedJob> child1 = new LinkedList<>();
-        LinkedList<AssignedJob> child2 = new LinkedList<>();
-        try {
-            child1.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(4, 7, 3), new AGV(1, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(3, 5, 2), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(1, 3), 0, 0));
-
-            child2.add(new AssignedJob(new WorkJob(1, 2, 1), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(1, 2, 1), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(3, 5, 2), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(4, 7, 3), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(1, 3), 0, 0));
-
-            //print all elements of child1
-            System.out.println("---------------------- child1 ----------------------");
-            for (int i = 0; i < child1.size(); i++) {
-                System.out.println(child1.get(i));
-            }
-            System.out.println("---------------------- child2 ----------------------");
-            for (int i = 0; i < child2.size(); i++) {
-                System.out.println(child2.get(i));
-            }
-            GAEngine.getInstance().fixDuplicate(child1, child2);
-            GAEngine.getInstance().fixDuplicate(child2, child1);
+            int startCrossPoint =    child1.size() / 3;
+            int endCrossPoint   = 2*(child1.size() / 3);
+            GAEngine.getInstance().fixDuplicate(child1, child2, startCrossPoint, endCrossPoint);
+            GAEngine.getInstance().fixDuplicate(child2, child1, startCrossPoint, endCrossPoint);
 
             System.out.println("AFTER FIX DUPLICATE");
             System.out.println("---------------------- child1 ----------------------");
@@ -143,19 +94,23 @@ class GAEngineTest {
         LinkedList<AssignedJob> mum_assignedJobs = new LinkedList<>();
 
         try {
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 7, 3), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 5, 2), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 1, 4), new AGV(2, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 7, 3), new AGV(1, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 5, 2), new AGV(2, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(8, 1, 4), new AGV(2, 3), 0, 0));
             dad_assignedJobs.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(1, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), new AGV(1, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(1, 3), 0, 0));
 
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 1), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 1), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 5, 2), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 7, 3), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(2, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 1), new AGV(1, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(8, 9, 5), new AGV(1, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 1), new AGV(2, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 5, 2), new AGV(1, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 7, 3), new AGV(2, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(2, 2, 2), new AGV(2, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 2, 2), new AGV(2, 3), 0, 0));
 
             Individual dad = Individual.generate(dad_assignedJobs);
             Individual mum = Individual.generate(mum_assignedJobs);
@@ -197,25 +152,50 @@ class GAEngineTest {
                     new AGV(2, 3),
                     new AGV(1, 3),
                     new AGV(2, 3),
-                    new AGV(1, 3),
                     new AGV(2, 3),
+                    new AGV(2, 3),
+                    new AGV(2, 3),
+                    new AGV(1, 3),
                     new AGV(2, 3));
-            
+
+
+
+
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
+
+            int [] solutionJobIdKID1 = {5,6,7,1,3,8,4,2};
+            int [] actualJObIdKID1 = new int[8];
+            //fill actual job id
+            for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
+                actualJObIdKID1[i] = kid1.getAssignedJobs().get(i).getJob().getId();
+            }
+            //check if the job id of the kid are the same of the solution in the same exact order
+            assertArrayEquals(solutionJobIdKID1, actualJObIdKID1);
+
 
             List<AGV> agvSolutionKID2 = List.of(
                     new AGV(1, 3),
                     new AGV(1, 3),
                     new AGV(2, 3),
+                    new AGV(1, 3),
                     new AGV(2, 3),
-                    new AGV(2, 3),
+                    new AGV(1, 3),
+                    new AGV(1, 3),
                     new AGV(1, 3));
+
 
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID2, agvKID2);
 
-
+            int [] solutionJobIdKID2 = {6,1,2,8,5,7,4,3};
+            int [] actualJObIdKID2 = new int[8];
+            //fill actual job id
+            for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
+                actualJObIdKID2[i] = kid2.getAssignedJobs().get(i).getJob().getId();
+            }
+            //check if the job id of the kid are the same of the solution in the same exact order
+            assertArrayEquals(solutionJobIdKID2, actualJObIdKID2);
         } catch (BatteryException e) {
             throw new RuntimeException(e);
         }
