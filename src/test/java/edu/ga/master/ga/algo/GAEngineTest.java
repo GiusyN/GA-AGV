@@ -64,8 +64,8 @@ class GAEngineTest {
                 System.out.println(child2.get(i));
             }
 
-            int startCrossPoint =    child1.size() / 3;
-            int endCrossPoint   = 2*(child1.size() / 3);
+            int startCrossPoint = child1.size() / 3;
+            int endCrossPoint = 2 * (child1.size() / 3);
             GAEngine.getInstance().fixDuplicate(child1, child2, startCrossPoint, endCrossPoint);
             GAEngine.getInstance().fixDuplicate(child2, child1, startCrossPoint, endCrossPoint);
 
@@ -161,8 +161,8 @@ class GAEngineTest {
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
 
-            int [] solutionJobIdKID1 = {3,6,7,1,5,8,4,2};
-            int [] actualJObIdKID1 = new int[8];
+            int[] solutionJobIdKID1 = {3, 6, 7, 1, 5, 8, 4, 2};
+            int[] actualJObIdKID1 = new int[8];
             //fill actual job id
             for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
                 actualJObIdKID1[i] = kid1.getAssignedJobs().get(i).getJob().getId();
@@ -185,8 +185,8 @@ class GAEngineTest {
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID2, agvKID2);
 
-            int [] solutionJobIdKID2 = {6,1,2,8,3,7,4,5};
-            int [] actualJObIdKID2 = new int[8];
+            int[] solutionJobIdKID2 = {6, 1, 2, 8, 3, 7, 4, 5};
+            int[] actualJObIdKID2 = new int[8];
             //fill actual job id
             for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
                 actualJObIdKID2[i] = kid2.getAssignedJobs().get(i).getJob().getId();
@@ -200,7 +200,6 @@ class GAEngineTest {
     }
 
 
-
     @Test
     void crossover2() {
         LinkedList<AssignedJob> dad_assignedJobs = new LinkedList<>();
@@ -212,7 +211,7 @@ class GAEngineTest {
             dad_assignedJobs.add(new AssignedJob(new WorkJob(8, 5, 2), new AGV(2, 3), 0, 0));
             dad_assignedJobs.add(new AssignedJob(new WorkJob(9, 1, 4), new AGV(2, 3), 0, 0));
             dad_assignedJobs.add(new AssignedJob(new WorkJob(11, 9, 5), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(3,3, 2), new AGV(1, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 3, 2), new AGV(1, 3), 0, 0));
             dad_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(1, 3), 0, 0));
             dad_assignedJobs.add(new AssignedJob(new WorkJob(10, 2, 2), new AGV(1, 3), 0, 0));
             dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(2, 3), 0, 0));
@@ -283,11 +282,12 @@ class GAEngineTest {
                     new AGV(2, 3),
                     new AGV(2, 3));
 
+
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
 
-            int [] solutionJobIdKID1 = {3,5,8,9,10,2,4,7,11,1,12,6};
-            int [] actualJObIdKID1 = new int[12];
+            int[] solutionJobIdKID1 = {3, 5, 8, 9, 10, 2, 4, 7, 11, 1, 12, 6};
+            int[] actualJObIdKID1 = new int[12];
             //fill actual job id
             for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
                 actualJObIdKID1[i] = kid1.getAssignedJobs().get(i).getJob().getId();
@@ -295,13 +295,11 @@ class GAEngineTest {
             //print actualJobIdkID1
             System.out.println("SOLUTION KID 1");
             for (int i = 0; i < actualJObIdKID1.length; i++) {
-                System.out.print(actualJObIdKID1[i]+ ", ");
+                System.out.print(actualJObIdKID1[i] + ", ");
             }
-
 
             //check if the job id of the kid are the same of the solution in the same exact order
             assertArrayEquals(solutionJobIdKID1, actualJObIdKID1);
-
 
             List<AGV> agvSolutionKID2 = List.of(
                     new AGV(1, 3),
@@ -322,8 +320,8 @@ class GAEngineTest {
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID2, agvKID2);
 
-            int [] solutionJobIdKID2 = {2,8,9,4,11,3,7,10,12,1,5,6};
-            int [] actualJObIdKID2 = new int[12];
+            int[] solutionJobIdKID2 = {2, 8, 9, 4, 11, 3, 7, 10, 12, 1, 5, 6};
+            int[] actualJObIdKID2 = new int[12];
             //fill actual job id
             for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
                 actualJObIdKID2[i] = kid2.getAssignedJobs().get(i).getJob().getId();
@@ -332,7 +330,7 @@ class GAEngineTest {
             //print actualJobIdkID2
             System.out.println("SOLUTION KID 2");
             for (int i = 0; i < actualJObIdKID2.length; i++) {
-                System.out.print(actualJObIdKID2[i]+ ", ");
+                System.out.print(actualJObIdKID2[i] + ", ");
             }
             //check if the job id of the kid are the same of the solution in the same exact order
             assertArrayEquals(solutionJobIdKID2, actualJObIdKID2);
@@ -341,4 +339,144 @@ class GAEngineTest {
         }
 
     }
+
+
+    @Test
+    public void testIntervalliTemporaliDopoRicarica() {
+        LinkedList<AssignedJob> dad_assignedJobs = new LinkedList<>();
+        LinkedList<AssignedJob> mum_assignedJobs = new LinkedList<>();
+
+        try {
+
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 4, 3), new AGV(1, 3),0 ,2 ));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(6,2 , 2), new AGV(2, 3),2 ,4 ));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(3,1 , 4), new AGV(1, 3),4 ,5 ));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 1, 5), new AGV(2, 3),5 , 6));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(1,2 , 2), new AGV(1, 3),6 ,8 ));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(5,5 , 2), new AGV(2, 3),8 , 13));
+
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(5,5 , 1), new AGV(2, 3), 0,5 ));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(4,1 , 5), new AGV(2, 3),5 , 6));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(2,4 , 1), new AGV(2, 3),6 ,10 ));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(6,2 , 2), new AGV(2, 3),10 ,12 ));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(1,2 , 3), new AGV(1, 3),12 ,14 ));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(3,1 , 2), new AGV(1, 3),14 , 15));
+
+            Individual dad = Individual.generate(dad_assignedJobs);
+            Individual mum = Individual.generate(mum_assignedJobs);
+
+            Pair<Individual, Individual> result = GAEngine.getInstance().crossover(dad, mum);
+            Individual kid1 = result.getLeft();
+            Individual kid2 = result.getRight();
+
+            System.out.println("AFTER CROSSOVER");
+
+            List<AGV> agvKID1 = new ArrayList<>();
+            List<AGV> agvKID2 = new ArrayList<>();
+
+
+            System.out.println("---------------------- dad ----------------------");
+            for (int i = 0; i < dad.getAssignedJobs().size(); i++) {
+                System.out.println(dad.getAssignedJobs().get(i));
+
+            }
+            System.out.println("---------------------- mum ----------------------");
+            for (int i = 0; i < mum.getAssignedJobs().size(); i++) {
+                System.out.println(mum.getAssignedJobs().get(i));
+            }
+            System.out.println("---------------------- kid1 ----------------------");
+            for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
+                System.out.println(kid1.getAssignedJobs().get(i));
+                agvKID1.add(kid1.getAssignedJobs().get(i).getAgv());
+            }
+            System.out.println("---------------------- kid2 ----------------------");
+            for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
+                System.out.println(kid2.getAssignedJobs().get(i));
+                agvKID2.add(kid2.getAssignedJobs().get(i).getAgv());
+            }
+
+
+            List<AGV> agvSolutionKID1 = List.of(
+                    new AGV(1, 3),
+                    new AGV(2, 3),
+                    new AGV(1, 3),
+                    new AGV(2, 3),
+                    new AGV(1, 3),
+                    new AGV(1, 3));
+
+
+
+            //check if the agv of the kid are the same of the solution in the same exact order
+            assertEquals(agvSolutionKID1, agvKID1);
+
+            int[] solutionJobIdKID1 = {3,4,2,6,1,5};
+            int[] actualJObIdKID1 = new int[6];
+            //fill actual job id
+            for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
+                actualJObIdKID1[i] = kid1.getAssignedJobs().get(i).getJob().getId();
+            }
+            //print actualJobIdkID1
+            System.out.println("SOLUTION KID 1");
+            for (int i = 0; i < actualJObIdKID1.length; i++) {
+                System.out.print(actualJObIdKID1[i] + ", ");
+            }
+
+            //check if the job id of the kid are the same of the solution in the same exact order
+            assertArrayEquals(solutionJobIdKID1, actualJObIdKID1);
+
+            List<AGV> agvSolutionKID2 = List.of(
+                    new AGV(2, 3),
+                    new AGV(2, 3),
+                    new AGV(2, 3),
+                    new AGV(2, 3),
+                    new AGV(1, 3),
+                    new AGV(2, 3));
+
+
+            ------
+
+            //check if the agv of the kid are the same of the solution in the same exact order
+            assertEquals(agvSolutionKID2, agvKID2);
+
+            int[] solutionJobIdKID2 = {5,6,3,4,1,2};
+            int[] actualJObIdKID2 = new int[6];
+            //fill actual job id
+            for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
+                actualJObIdKID2[i] = kid2.getAssignedJobs().get(i).getJob().getId();
+            }
+
+            //print actualJobIdkID2
+            System.out.println("SOLUTION KID 2");
+            for (int i = 0; i < actualJObIdKID2.length; i++) {
+                System.out.print(actualJObIdKID2[i] + ", ");
+            }
+            //check if the job id of the kid are the same of the solution in the same exact order
+            assertArrayEquals(solutionJobIdKID2, actualJObIdKID2);
+
+            int [] startTimes_kid1 = {0,0,1,1,5,7};
+            int [] endTimes_kid1 = {1,1,5,3,7,12};
+
+            for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
+                assertEquals(startTimes_kid1[i], kid1.getAssignedJobs().get(i).getStartTime());
+                assertEquals(endTimes_kid1[i], kid1.getAssignedJobs().get(i).getEndTime());
+            }
+
+            int [] startTimes_kid2 = {0,5,7,8,0,9};
+            int [] endTimes_kid2 = {5,7,8,9,2,13};
+
+            for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
+                assertEquals(startTimes_kid2[i], kid2.getAssignedJobs().get(i).getStartTime());
+                assertEquals(endTimes_kid2[i], kid2.getAssignedJobs().get(i).getEndTime());
+            }
+
+
+
+
+
+
+        } catch (BatteryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
