@@ -62,8 +62,6 @@ public class Individual {
 
         //init startTime per AGV
 
-        
-
 
         for (int i = 1; i <= this.numAGV; i++) {
             agvStartTimeMap.put(i, 0);
@@ -111,7 +109,7 @@ public class Individual {
         return numAGV;
     }
 
-    private void calculateReloads() throws BatteryException {
+    public void calculateReloads() throws BatteryException {
 
         //reset starTime helper map
         for (int i = 1; i <= this.numAGV; i++) {
@@ -131,9 +129,56 @@ public class Individual {
                 //inserire il nodo di ricarica
                 int energyMissingToFullCapacity = Settings.getInstance().getBatteryCapacity() - agv.getBatteryLevel();
                 int minimumEnergyForNextStep = energy - agv.getBatteryLevel();
-                int randomQuantityEnergyToReload = Utils.randomInRange(1, energyMissingToFullCapacity + 1);
-                int finalReload = randomQuantityEnergyToReload < minimumEnergyForNextStep ? minimumEnergyForNextStep : randomQuantityEnergyToReload;
-                ReloadJob reloadJob = new ReloadJob(agv.getId(), finalReload);
+
+                //lista contenente tutte le possibili ricariche che posso fare
+                List<Integer> allReloadsPossibilities = new LinkedList<>();
+                for (int i = minimumEnergyForNextStep; i <= energyMissingToFullCapacity; i++) {
+                    allReloadsPossibilities.add(i);
+                }
+                ReloadJob reloadJob = null;
+                if(allReloadsPossibilities.size() == 1){
+                    //se ho solo una possibilità di ricarica, inserisco il job di ricarica
+                    reloadJob = new ReloadJob(agv.getId(), allReloadsPossibilities.get(0));
+                }else{
+                    //ogni coppia è composta dalla quantità di ricarica e dal numero di task che riesce a fare con quella ricarica
+                    List<Pair<Integer,Integer>> valutazioniRicariche = new LinkedList<>();
+                    //         R1        1 task
+                    //         R2        2 task
+                    //         R3        2 task
+                    // massimizzare in base al numero di task e minimizzare in base alla quantità di ricarica
+                    for (Integer reloadPossibility : allReloadsPossibilities) {
+                        int numTask = 1;
+                        int energyLeft = agv.getBatteryLevel() + reloadPossibility;
+                        int nextIndex = index + 1;
+                        while (nextIndex < jobs.size() && energyLeft >= jobs.get(nextIndex).getJob().getEnergy()) {
+                            energyLeft -= jobs.get(nextIndex).getJob().getEnergy();
+                            numTask++;
+                            nextIndex++;
+                        }
+                        valutazioniRicariche.add(new ImmutablePair<>(reloadPossibility, numTask));
+                    }
+                    //stampa tutte le valutazioni ricariche:
+                    for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
+                        System.out.println("Ricarica: " + valutazioneRicarica.getLeft() + " - Task: " + valutazioneRicarica.getRight());
+                    }
+
+                    //trova la coppia con il più alto numero di task e ricarica più bassa
+                    Pair<Integer, Integer> bestReload = valutazioniRicariche.get(0);
+                    for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
+                        if(valutazioneRicarica.getRight() > bestReload.getRight()){
+                            bestReload = valutazioneRicarica;
+                        }else if(valutazioneRicarica.getRight() == bestReload.getRight()){
+                            if(valutazioneRicarica.getLeft() < bestReload.getLeft()){
+                                bestReload = valutazioneRicarica;
+                            }
+                        }
+                    }
+                    reloadJob = new ReloadJob(agv.getId(), bestReload.getLeft());
+                    //stampa best reload
+                    System.out.println("Best reload: " + bestReload.getLeft() + " - Task: " + bestReload.getRight());
+                }
+
+
 //                int startTime = agvStartTimeMap.get(agv);
 //                int endTime = agvStartTimeMap.get(agv) + reloadJob.getTime();
 
@@ -144,7 +189,7 @@ public class Individual {
                         -1),        //LEFT of PAIR
                         index)        //RIGHT of PAIR
                 );
-                agv.reload(finalReload);
+                agv.reload(reloadJob.getEnergy());
                 agv.work(energy);
             } else {
                 agv.work(energy);
@@ -231,4 +276,23 @@ public class Individual {
         return sb.toString();
     }
 
+    public List<AssignedJob> getReloadJobs() {
+        List<AssignedJob> reloadJobs = new LinkedList<>();
+        for(AssignedJob job : jobs){
+            if(job.getJob() instanceof ReloadJob){
+                reloadJobs.add(job);
+            }
+        }
+        return reloadJobs;
+    }
+
+    public List<AssignedJob> getWorkJobs(){
+        List<AssignedJob> workJobs = new LinkedList<>();
+        for(AssignedJob job : jobs){
+            if(job.getJob() instanceof WorkJob){
+                workJobs.add(job);
+            }
+        }
+        return workJobs;
+    }
 }

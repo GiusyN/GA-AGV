@@ -1,8 +1,7 @@
 package edu.ga.master.ga.algo;
 
-import edu.ga.master.ga.model.AGV;
-import edu.ga.master.ga.model.AssignedJob;
-import edu.ga.master.ga.model.Individual;
+import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.model.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +46,6 @@ public class GAEngine {
     //controlla che una lista di AssignedJob non contenga duplicati
     public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2, int start, int end) {
         System.out.println("start: " + start + " end: " + end);
-
 
         do {
             for (int i = start; i < end; i++) {
@@ -97,35 +95,39 @@ public class GAEngine {
 
     public Pair<Individual, Individual> crossover(@NotNull Individual dad, @NotNull Individual mum) {
 
-        List<AGV> agvsDad = new ArrayList<>(dad.getAssignedJobs().size() * 2);
-        List<AGV> agvsMum = new ArrayList<>(mum.getAssignedJobs().size() * 2);
+        List<AssignedJob> dadWorkJobs = dad.getWorkJobs();
+        List<AssignedJob> mumWorkJobs = mum.getWorkJobs();
+
+
+        List<AGV> agvsDad = new ArrayList<>(dadWorkJobs.size() * 2);
+        List<AGV> agvsMum = new ArrayList<>(mumWorkJobs.size() * 2);
 
         //fill agvs with all agvs
         for (int i = 0; i < dad.getAssignedJobs().size(); i++) {
             agvsDad.add(dad.getAssignedJobs().get(i).getAgv());
         }
-        for (int i = 0; i < mum.getAssignedJobs().size(); i++) {
+        for (int i = 0; i < mumWorkJobs.size(); i++) {
             agvsMum.add(mum.getAssignedJobs().get(i).getAgv());
         }
 
         //---------------------------------CROSSOVER JOBS---------------------------------
-        LinkedList<AssignedJob> daddyAssignedJobs = dad.getAssignedJobs();
-        LinkedList<AssignedJob> mummyAssignedJobs = mum.getAssignedJobs();
+//        List<AssignedJob> daddyAssignedJobs = dad.getAssignedJobs();
+//        List<AssignedJob> mummyAssignedJobs = mumWorkJobs;
 
-        int startCrossPoint = daddyAssignedJobs.size() / 3;
-        int endCrossPoint = 2 * (daddyAssignedJobs.size() / 3);
+        int startCrossPoint = dadWorkJobs.size() / 3;
+        int endCrossPoint = 2 * (dadWorkJobs.size() / 3);
 
         LinkedList<AssignedJob> child1AssignedJobs = new LinkedList<>();
         LinkedList<AssignedJob> child2AssignedJobs = new LinkedList<>();
 
         //calcola la sottostringa centrale
-        for (int i = 0; i < daddyAssignedJobs.size(); i++) {
+        for (int i = 0; i < dadWorkJobs.size(); i++) {
             if (i >= startCrossPoint && i < endCrossPoint) {
-                child1AssignedJobs.add(mummyAssignedJobs.get(i));
-                child2AssignedJobs.add(daddyAssignedJobs.get(i));
+                child1AssignedJobs.add(mumWorkJobs.get(i));
+                child2AssignedJobs.add(dadWorkJobs.get(i));
             } else {
-                child1AssignedJobs.add(daddyAssignedJobs.get(i));
-                child2AssignedJobs.add(mummyAssignedJobs.get(i));
+                child1AssignedJobs.add(dadWorkJobs.get(i));
+                child2AssignedJobs.add(mumWorkJobs.get(i));
             }
         }
 
@@ -162,6 +164,15 @@ public class GAEngine {
         for (int i = swapPoint; i < child1AssignedJobs.size(); i++) {
             kid1.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
             kid2.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
+        }
+
+
+        try {
+            kid1.calculateReloads();
+            kid2.calculateReloads();
+        } catch (BatteryException e) {
+            e.printStackTrace();
+            System.exit(0);
         }
 
         System.out.println("************************** END CROSSOVER **************************");
