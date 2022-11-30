@@ -89,7 +89,8 @@ public class AGV {
         return id + ",\t batteryLevel=" + batteryLevel + " ";
     }
 
-    
-    
-    
+
+    public void fill() {
+        this.batteryLevel = Settings.getInstance().getBatteryCapacity();
+    }
 }

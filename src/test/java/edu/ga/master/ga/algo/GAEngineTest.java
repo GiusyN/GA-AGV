@@ -3,7 +3,11 @@ package edu.ga.master.ga.algo;
 
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.model.*;
+import edu.ga.master.ga.model.impl.FakeJobGenerator;
+import edu.ga.master.ga.model.impl.RealJobGenerator;
+import edu.ga.master.ga.utils.Settings;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.cert.X509Certificate;
@@ -16,6 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GAEngineTest {
 
+    //execute this to initialize
+    @BeforeAll
+    static void init() {
+        System.out.println("---- INIT TEST SUITE ----");
+        Settings.getInstance().setBatteryCapacity(5);
+        Settings.getInstance().setMaxTime(5);
+        JobManager.getInstance().init(new FakeJobGenerator());
+        JobManager.getInstance().generateJobs(10);
+    }
 
     //check if the child has duplicate jobs
     private boolean checkDuplicate(LinkedList<AssignedJob> child) {
@@ -36,23 +49,26 @@ class GAEngineTest {
         LinkedList<AssignedJob> child1 = new LinkedList<>();
         LinkedList<AssignedJob> child2 = new LinkedList<>();
         try {
-            child1.add(new AssignedJob(new WorkJob(3, 1, 4), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(6, 7, 3), new AGV(1, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(2, 5, 2), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(8, 1, 4), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(2, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(1, 2, 2), new AGV(1, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
-            child1.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(1, 3), 0, 0));
+            AGV agv1 = new AGV(1, Settings.getInstance().getBatteryCapacity());
+            AGV agv2 = new AGV(2, Settings.getInstance().getBatteryCapacity());
 
-            child2.add(new AssignedJob(new WorkJob(6, 2, 1), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(8, 9, 5), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(7, 2, 1), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(1, 5, 2), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(3, 7, 3), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(2, 2, 2), new AGV(2, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
-            child2.add(new AssignedJob(new WorkJob(5, 2, 2), new AGV(2, 3), 0, 0));
+            child1.add(new AssignedJob(new WorkJob(3, 1, 4), agv2, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(6, 7, 3), agv1, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(2, 5, 2), agv2, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(8, 1, 4), agv2, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(5, 9, 5), agv2, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(1, 2, 2), agv1, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(4, 2, 2), agv1, 0, 0));
+            child1.add(new AssignedJob(new WorkJob(7, 2, 2), agv1, 0, 0));
+
+            child2.add(new AssignedJob(new WorkJob(6, 2, 1), agv1, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(8, 9, 5), agv1, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(7, 2, 1), agv2, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(1, 5, 2), agv1, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(3, 7, 3), agv2, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(2, 2, 2), agv2, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(4, 2, 2), agv1, 0, 0));
+            child2.add(new AssignedJob(new WorkJob(5, 2, 2), agv2, 0, 0));
 
             //print all elements of child1
             System.out.println("---------------------- child1 ----------------------");
@@ -95,23 +111,26 @@ class GAEngineTest {
         LinkedList<AssignedJob> mum_assignedJobs = new LinkedList<>();
 
         try {
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 1, 4), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 7, 3), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 5, 2), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(8, 1, 4), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(5, 9, 5), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(1, 3), 0, 0));
+            AGV agv1 = new AGV(1, Settings.getInstance().getBatteryCapacity());
+            AGV agv2 = new AGV(2, Settings.getInstance().getBatteryCapacity());
 
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 1), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(8, 9, 5), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 1), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 5, 2), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 7, 3), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(2, 2, 2), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 2, 2), new AGV(2, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 1, 4), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 7, 3), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 5, 2), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(8, 1, 4), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(5, 9, 5), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), agv1, 0, 0));
+
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 1), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(8, 9, 5), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 1), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 5, 2), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 7, 3), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(2, 2, 2), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 2, 2), agv2, 0, 0));
 
             Individual dad = Individual.generate(dad_assignedJobs);
             Individual mum = Individual.generate(mum_assignedJobs);
@@ -149,14 +168,14 @@ class GAEngineTest {
 
 
             List<AGV> agvSolutionKID1 = List.of(
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3));
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5));
 
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
@@ -172,14 +191,14 @@ class GAEngineTest {
 
 
             List<AGV> agvSolutionKID2 = List.of(
-                    new AGV(1, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(1, 3),
-                    new AGV(1, 3));
+                    new AGV(1, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(1, 5),
+                    new AGV(1, 5));
 
 
             //check if the agv of the kid are the same of the solution in the same exact order
@@ -206,31 +225,34 @@ class GAEngineTest {
         LinkedList<AssignedJob> mum_assignedJobs = new LinkedList<>();
 
         try {
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 1, 4), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(5, 7, 3), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(8, 5, 2), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(9, 1, 4), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(11, 9, 5), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 3, 2), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(10, 2, 2), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), new AGV(2, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(12, 2, 2), new AGV(1, 3), 0, 0));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(1, 3), 0, 0));
+            AGV agv1 = new AGV(1, Settings.getInstance().getBatteryCapacity());
+            AGV agv2 = new AGV(2, Settings.getInstance().getBatteryCapacity());
 
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 2, 1), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(8, 9, 5), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(9, 2, 1), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(11, 5, 2), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(10, 7, 3), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(2, 2, 2), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(12, 2, 2), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), new AGV(1, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 2, 2), new AGV(2, 3), 0, 0));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), new AGV(2, 3), 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 1, 4), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(5, 7, 3), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(8, 5, 2),  agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(9, 1, 4),  agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(11, 9, 5), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 3, 2), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(10, 2, 2), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), agv2, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(12, 2, 2), agv1, 0, 0));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2),  agv1, 0, 0));
+
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 2, 1), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(8, 9, 5), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(9, 2, 1), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(11, 5, 2), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(10, 7, 3), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(2, 2, 2),  agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 2, 2), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(7, 2, 2), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(12, 2, 2), agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2),  agv1, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 2, 2), agv2, 0, 0));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), agv2, 0, 0));
 
             Individual dad = Individual.generate(dad_assignedJobs);
             Individual mum = Individual.generate(mum_assignedJobs);
@@ -268,19 +290,19 @@ class GAEngineTest {
 
 
             List<AGV> agvSolutionKID1 = List.of(
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
 
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3));
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5));
 
 
             //check if the agv of the kid are the same of the solution in the same exact order
@@ -302,19 +324,19 @@ class GAEngineTest {
             assertArrayEquals(solutionJobIdKID1, actualJObIdKID1);
 
             List<AGV> agvSolutionKID2 = List.of(
-                    new AGV(1, 3),
-                    new AGV(1, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
+                    new AGV(1, 5),
+                    new AGV(1, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
 
-                    new AGV(1, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(1, 3));
+                    new AGV(1, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(1, 5));
 
 
             //check if the agv of the kid are the same of the solution in the same exact order
@@ -347,20 +369,22 @@ class GAEngineTest {
         LinkedList<AssignedJob> mum_assignedJobs = new LinkedList<>();
 
         try {
+            AGV agv1 = new AGV(1, Settings.getInstance().getBatteryCapacity());
+            AGV agv2 = new AGV(2, Settings.getInstance().getBatteryCapacity());
 
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 4, 3), new AGV(1, 3),0 ,2 ));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(6,2 , 2), new AGV(2, 3),2 ,4 ));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(3,1 , 4), new AGV(1, 3),4 ,5 ));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 1, 5), new AGV(2, 3),5 , 6));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(1,2 , 2), new AGV(1, 3),6 ,8 ));
-            dad_assignedJobs.add(new AssignedJob(new WorkJob(5,5 , 2), new AGV(2, 3),8 , 13));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(2, 4, 3), agv1, 0, 2));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), agv2, 2, 4));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(3, 1, 4), agv1, 4, 5));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(4, 1, 5), agv2, 5, 6));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 2), agv1, 6, 8));
+            dad_assignedJobs.add(new AssignedJob(new WorkJob(5, 5, 2), agv2, 8, 13));
 
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(5,5 , 1), new AGV(2, 3), 0,5 ));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(4,1 , 5), new AGV(2, 3),5 , 6));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(2,4 , 1), new AGV(2, 3),6 ,10 ));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(6,2 , 2), new AGV(2, 3),10 ,12 ));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(1,2 , 3), new AGV(1, 3),12 ,14 ));
-            mum_assignedJobs.add(new AssignedJob(new WorkJob(3,1 , 2), new AGV(1, 3),14 , 15));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(5, 5, 1), agv2, 0, 5));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(4, 1, 5), agv2, 5, 6));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(2, 4, 1), agv2, 6, 10));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(6, 2, 2), agv2, 10, 12));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(1, 2, 3), agv1, 12, 14));
+            mum_assignedJobs.add(new AssignedJob(new WorkJob(3, 1, 2), agv1, 14, 15));
 
             Individual dad = Individual.generate(dad_assignedJobs);
             Individual mum = Individual.generate(mum_assignedJobs);
@@ -397,19 +421,18 @@ class GAEngineTest {
 
 
             List<AGV> agvSolutionKID1 = List.of(
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(1, 3));
-
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(1, 5));
 
 
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID1, agvKID1);
 
-            int[] solutionJobIdKID1 = {3,4,2,6,1,5};
+            int[] solutionJobIdKID1 = {3, 4, 2, 6, 1, 5};
             int[] actualJObIdKID1 = new int[6];
             //fill actual job id
             for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
@@ -425,20 +448,18 @@ class GAEngineTest {
             assertArrayEquals(solutionJobIdKID1, actualJObIdKID1);
 
             List<AGV> agvSolutionKID2 = List.of(
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(2, 3),
-                    new AGV(1, 3),
-                    new AGV(2, 3));
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(2, 5),
+                    new AGV(1, 5),
+                    new AGV(2, 5));
 
-
-            ------
 
             //check if the agv of the kid are the same of the solution in the same exact order
             assertEquals(agvSolutionKID2, agvKID2);
 
-            int[] solutionJobIdKID2 = {5,6,3,4,1,2};
+            int[] solutionJobIdKID2 = {5, 6, 3, 4, 1, 2};
             int[] actualJObIdKID2 = new int[6];
             //fill actual job id
             for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
@@ -453,25 +474,21 @@ class GAEngineTest {
             //check if the job id of the kid are the same of the solution in the same exact order
             assertArrayEquals(solutionJobIdKID2, actualJObIdKID2);
 
-            int [] startTimes_kid1 = {0,0,1,1,5,7};
-            int [] endTimes_kid1 = {1,1,5,3,7,12};
+            int[] startTimes_kid1 = {0, 0, 1, 1, 5, 7};
+            int[] endTimes_kid1 = {1, 1, 5, 3, 7, 12};
 
             for (int i = 0; i < kid1.getAssignedJobs().size(); i++) {
                 assertEquals(startTimes_kid1[i], kid1.getAssignedJobs().get(i).getStartTime());
                 assertEquals(endTimes_kid1[i], kid1.getAssignedJobs().get(i).getEndTime());
             }
 
-            int [] startTimes_kid2 = {0,5,7,8,0,9};
-            int [] endTimes_kid2 = {5,7,8,9,2,13};
+            int[] startTimes_kid2 = {0, 5, 7, 8, 0, 9};
+            int[] endTimes_kid2 = {5, 7, 8, 9, 2, 13};
 
             for (int i = 0; i < kid2.getAssignedJobs().size(); i++) {
                 assertEquals(startTimes_kid2[i], kid2.getAssignedJobs().get(i).getStartTime());
                 assertEquals(endTimes_kid2[i], kid2.getAssignedJobs().get(i).getEndTime());
             }
-
-
-
-
 
 
         } catch (BatteryException e) {

@@ -1,6 +1,7 @@
 package edu.ga.master.ga.algo;
 
 import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.model.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -168,9 +169,15 @@ public class GAEngine {
 
 
         try {
+            kid1.setTestcode("KID1");
+            kid2.setTestcode("KID2");
+
             kid1.calculateReloads();
             kid2.calculateReloads();
         } catch (BatteryException e) {
+            e.printStackTrace();
+            System.exit(0);
+        } catch (GAInconsistencyException e) {
             e.printStackTrace();
             System.exit(0);
         }
