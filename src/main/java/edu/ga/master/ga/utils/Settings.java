@@ -18,6 +18,9 @@ public class Settings {
     public static final float TETHA = 30f;//217.1f;
     public static final float K1 = 2f/3f; //costante per il tempo
     public static final float K2 = 1f/3f; //costante per il numero di AGV
+    private int populationSize = 100;
+    private int numberOfJobs = 6;
+
     
     public static Settings getInstance() {
         if (_instance == null) {
@@ -61,5 +64,21 @@ public class Settings {
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
     }
-    
+
+    public int getNumberOfJobs() {
+        return numberOfJobs;
+    }
+
+    public void setNumberOfJobs(int jobCount) {
+        this.numberOfJobs = jobCount;
+    }
+
+    public void setPopulationSize(int populationSize) {
+        this.populationSize = populationSize;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
 }

@@ -330,14 +330,18 @@ public class Individual {
     public String printJobs(boolean withReload) {
         StringBuilder sb = new StringBuilder();
         for (AssignedJob job : jobs) {
-            if (job.getJob() instanceof ReloadJob && !withReload) {
+            if (job.getJob() instanceof ReloadJob && withReload) {
+                    sb.append("R").append(job.getJob().getId()).append(" ");
+            }else{
                 continue;
             }
             sb.append("J").append(job.getJob().getId()).append(" ");
         }
         sb.append(" | ");
         for (AssignedJob job : jobs) {
-            if (job.getJob() instanceof ReloadJob && !withReload) {
+            if (job.getJob() instanceof ReloadJob && withReload) {
+                    sb.append("R").append(job.getJob().getId()).append(" ");
+            }else{
                 continue;
             }
             sb.append("A").append(job.getAgv().getId()).append(" ");

@@ -31,7 +31,7 @@ public class GAEngine {
 
     }
 
-    //check if a list of assigned job contains job id ducplicates
+    //check if a list of assigned job contains job id duplicates
     public boolean checkDuplicateJobId(@NotNull List<AssignedJob> assignedJobs) {
         List<Integer> jobIds = new ArrayList<>();
         for (AssignedJob assignedJob : assignedJobs) {

@@ -557,7 +557,6 @@ class GAEngineTest {
                 assertEquals(endTimes_kid2[i], workJobsKid2.get(i).getEndTime());
             }
 
-
         } catch (BatteryException e) {
             throw new RuntimeException(e);
         }

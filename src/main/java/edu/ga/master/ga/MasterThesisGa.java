@@ -28,6 +28,8 @@ public class MasterThesisGa {
 
             Settings.getInstance().setBatteryCapacity(5);
             Settings.getInstance().setMaxTime(5);
+            Settings.getInstance().setPopulationSize(100);
+            Settings.getInstance().setNumberOfJobs(10);
             JobManager.getInstance().init(new RealJobGenerator());
             JobManager.getInstance().generateJobs(10);
             try {
@@ -45,13 +47,13 @@ public class MasterThesisGa {
             System.out.println("********************************************");
             System.out.println(" creation of population of size 100");
             System.out.println("********************************************");
-            Population population = new Population.Builder(100)
+            Population population = new Population.Builder() //il size è settato in settings
                     .distribution(Population.DISTRIBUTION.EQUAL)
                     .minimumAGV(1)
                     .maximumAGV(6)
                     .build();
 
-            population.print(false);
+            population.print(true);
 
 
         } catch (BatteryException ex) {

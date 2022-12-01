@@ -5,6 +5,7 @@
 package edu.ga.master.ga.model;
 
 import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 
 /**
@@ -13,7 +14,7 @@ import edu.ga.master.ga.utils.Utils;
  */
 public class Population {
 
-    private int size;
+
     private Individual[] individuals;
     private int minimumAGV;
     private int maximumAGV;
@@ -25,15 +26,30 @@ public class Population {
 
     //stampa tutti gli individui senza ricarica
     public void print(boolean withReloads){
+        int size = Settings.getInstance().getPopulationSize();
+        System.out.println(" ***************************************************************************************");
+        System.out.println(" ***************                     POPULATION                          ***************" );
+        System.out.println(" ***************************************************************************************");
+        System.out.println("Dettagli popolazione: ");
+        System.out.println("Dimensione: " + size);
+        System.out.println("Numero minimo di AGV: " + minimumAGV);
+        System.out.println("Numero massimo di AGV: " + maximumAGV);
+        System.out.println("Distribuzione: " + distribution);
+        System.out.println("Capacity batteria: " + Settings.getInstance().getBatteryCapacity());
+        System.out.println("Penalità ricarica: " + Settings.getInstance().getReloadPenalty());
+        System.out.println("Tempo massimo di durata di un job: " + Settings.getInstance().getMaxTime());
+        System.out.println("Numero di job: " + Settings.getInstance().getNumberOfJobs());
+        System.out.println("***************************************************************************************");
         for (int i = 0; i < size; i++) {
             System.out.print("Individual " + i + ": ");
             System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
     }
 
+
     
     private Population(Builder builder){
-        this.size = builder.size;
+        int size = Settings.getInstance().getPopulationSize();
         this.minimumAGV = builder.minimumAGV;
         this.maximumAGV = builder.maximumAGV;
         this.distribution = builder.distribution;
@@ -55,16 +71,14 @@ public class Population {
 
     public static class Builder {
 
-        private int size;
         private int minimumAGV = 1;
         private int maximumAGV = 5;
         private DISTRIBUTION distribution = DISTRIBUTION.EQUAL;
         private Individual[] individuals;
 
 
-        public Builder(int size) {
-            this.size = size;
-            this.individuals = new Individual[size];
+        public Builder() {
+            this.individuals = new Individual[Settings.getInstance().getPopulationSize()];
         }
 
         public Builder minimumAGV(int minimumAGV) {
