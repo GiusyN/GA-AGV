@@ -10,6 +10,9 @@ import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author sommovir
@@ -26,12 +29,31 @@ public class Population {
         EQUAL, RANDOM
     };
 
-    //stampa tutti gli individui senza ricarica
-    public void print(boolean withReloads){
+
+    public void printWithManyJobs() {
+        printSettings();
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%12s | %8s | %10s |", "INDIVIDUAL", "N. AGV", "FITNESS");
+        System.out.println();
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        int size = Settings.getInstance().getPopulationSize();
+        for (int i = 0; i < size; i++) {
+
+            //format fitness in 2 decimali
+            String fitness = String.format("%.2f", individuals[i].getFitness());
+            System.out.printf("%12s | %8s | %10s |" , ""+i, individuals[i].getNumAGV(),""+fitness);
+            System.out.println();
+//            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
+        }
+    }
+
+
+    public void printSettings(){
         int size = Settings.getInstance().getPopulationSize();
         System.out.println(" ***************************************************************************************");
         System.out.println(" ***************                     POPULATION                          ***************" );
         System.out.println(" ***************************************************************************************");
+        System.out.println("Numero di Jobs: "+Settings.getInstance().getNumberOfJobs());
         System.out.println("Dettagli popolazione: ");
         System.out.println("Dimensione: " + size);
         System.out.println("Numero minimo di AGV: " + minimumAGV);
@@ -42,18 +64,25 @@ public class Population {
         System.out.println("Tempo massimo di durata di un job: " + Settings.getInstance().getMaxTime());
         System.out.println("Numero di job: " + Settings.getInstance().getNumberOfJobs());
         System.out.println("***************************************************************************************");
+    }
 
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-        System.out.printf("%12s | %60s | %60s | %8s | %10s |", "INDIVIDUAL","JOB & RELOADS ASSIGNEMENTS", "AGV ASSIGNEMENT", "N. AGV", "FITNESS");
+    //stampa tutti gli individui senza ricarica
+    public void print(boolean withReloads){
+
+        printSettings();
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%12s | %90s | %90s | %8s | %10s |", "INDIVIDUAL","JOB & RELOADS ASSIGNEMENTS", "AGV ASSIGNEMENT", "N. AGV", "FITNESS");
         System.out.println();
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        int size = Settings.getInstance().getPopulationSize();
         for (int i = 0; i < size; i++) {
 //            System.out.print("Individual " + i + ": ");
             Pair<String, String> stringStringPair = individuals[i].printJobs(withReloads);
             String jobAssignement = stringStringPair.getLeft();
             String agvAssignement = stringStringPair.getRight();
-            System.out.printf("%12s | %60s | %60s | %8s | %10s |" , ""+i,jobAssignement, agvAssignement, individuals[i].getNumAGV(),""+individuals[i].getFitness());
+            //format fitness in 2 decimali
+            String fitness = String.format("%.2f", individuals[i].getFitness());
+            System.out.printf("%12s | %90s | %90s | %8s | %10s |" , ""+i,jobAssignement, agvAssignement, individuals[i].getNumAGV(),""+fitness);
             System.out.println();
 //            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
@@ -70,16 +99,41 @@ public class Population {
         for (int i = 0; i < size; i++) {
             try {
                 individuals[i] = new Individual(Utils.randomInRange(minimumAGV, maximumAGV));
+                individuals[i].calculateReloads();
             } catch (GAInconsistencyException | BatteryException e) {
                 throw new RuntimeException(e);
             }
         }
-//        if(distribution==DISTRIBUTION.EQUAL){
-//            int howMany = (this.maximumAGV - this.minimumAGV) / size;
-//
-//        }else{
-//            //TODO
-//        }
+        //sort individuals by fitness
+        sort();
+
+
+
+    }
+
+    private void sort() {
+        //transform individuals array into a list
+        List<Individual> list = new ArrayList<>();
+        for (Individual individual : individuals) {
+            list.add(individual);
+        }
+        //sort list
+        list.sort((Individual o1, Individual o2) -> {
+            if (o1.getFitness() > o2.getFitness()) {
+                return 1;
+            } else if (o1.getFitness() < o2.getFitness()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        //update current individual array
+        for (int i = 0; i < individuals.length; i++) {
+            individuals[i] = list.get(i);
+        }
+
+
+
     }
 
     public static class Builder {

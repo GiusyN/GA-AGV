@@ -7,24 +7,25 @@ package edu.ga.master.ga.model;
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.utils.Settings;
-import edu.ga.master.ga.utils.Utils;
 
 import java.util.*;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
 /**
  * @author sommovir
  */
-public class Individual {
+public class Individual implements Comparable<Individual> {
 
     private String testcode;
     private float fitness = -1f;
     private LinkedList<AssignedJob> jobs = new LinkedList<>();
-    private boolean dirty = false;
+    private boolean dirty_fitness = true;
+    private boolean dirty_makespan = true;
     private int makespan = -1;
     private int numAGV;
     private Map<Integer, AGV> agvByIDMap = new HashMap<>();
@@ -39,7 +40,6 @@ public class Individual {
         Individual individual = new Individual();
         individual.numAGV = getNumAGV(assignedJobs);
         individual.jobs.addAll(assignedJobs);
-        individual.dirty = false;
         //init avg map
         for (AssignedJob job : assignedJobs) {
             individual.agvByIDMap.put(job.getAgv().getId(), job.getAgv());
@@ -72,6 +72,16 @@ public class Individual {
     public Individual(int numAGV) throws BatteryException, GAInconsistencyException {
         this.numAGV = numAGV;
         LinkedList <WorkJob> workJobs = JobManager.getInstance().getJobs();
+
+        //shuffle work jobs
+        Collections.shuffle(workJobs);
+
+        System.out.println(" -------------- SHUFFLE --------------");
+        for (WorkJob workJob : workJobs) {
+            System.out.print(workJob.getId() + " ");
+        }
+        System.out.println();
+        System.out.println(" -------------------------------------");
 
         //init startTime per AGV
 
@@ -124,7 +134,6 @@ public class Individual {
 
     public void calculateReloads() throws BatteryException, GAInconsistencyException {
 
-        JOptionPane.showMessageDialog(null, "CALCULATE RELOADS");
 
         this.clearReloads();
 
@@ -301,6 +310,7 @@ public class Individual {
             agvStartTimeMap.put(agv.getId(), endTime);
             System.out.println(assignedJob);
         }
+        dirty_fitness = true;
 
     }
 
@@ -312,13 +322,16 @@ public class Individual {
     }
 
     private void calculateMakespan() {
-        //ricalcola il makespan
-        //TODO
-        this.dirty = false;
+        this.makespan = 0;
+        for(AssignedJob assignedJob : jobs) {
+            if(assignedJob.getEndTime() > this.makespan) {
+                this.makespan = assignedJob.getEndTime();
+            }
+        }
     }
 
     public int getMakespan() {
-        if (dirty) {
+        if (dirty_makespan) {
             calculateMakespan();
         }
         return this.makespan;
@@ -326,9 +339,13 @@ public class Individual {
 
     public void calculateFitness() {
         this.fitness = Settings.K1 * (float) getMakespan() + Settings.K2 * Settings.TETHA * (float) this.numAGV;
+        dirty_fitness = false;
     }
 
     public float getFitness() {
+        if (dirty_fitness) {
+            calculateFitness();
+        }
         return this.fitness;
     }
 
@@ -337,7 +354,7 @@ public class Individual {
         StringBuilder sb_agv = new StringBuilder();
         for (AssignedJob job : jobs) {
             if (job.getJob() instanceof ReloadJob && withReload) {
-                sb_jobs.append("R").append(job.getJob().getId()).append(" ");
+                sb_jobs.append("E").append(((ReloadJob)job.getJob()).getEnergy()).append(" ");
             } else {
                 sb_jobs.append("J").append(job.getJob().getId()).append(" ");
             }
@@ -380,6 +397,18 @@ public class Individual {
         List<AssignedJob> reloadJobs = getReloadJobs();
         for (AssignedJob reloadJob : reloadJobs) {
             jobs.remove(reloadJob);
+        }
+    }
+
+    @Override
+    public int compareTo(@NotNull Individual o) {
+        //compare by fitness
+        if (this.getFitness() < o.getFitness()) {
+            return -1;
+        } else if (this.getFitness() > o.getFitness()) {
+            return 1;
+        } else {
+            return 0;
         }
     }
 }

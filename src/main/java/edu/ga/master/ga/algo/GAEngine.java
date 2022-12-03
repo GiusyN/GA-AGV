@@ -28,7 +28,22 @@ public class GAEngine {
     }
 
     public void run() {
-
+        //init population
+//        Population population = new Population();
+//        population.init();
+//        //extract 20% of population
+//        List<Chromosome> elite = population.getElite();
+//        //extract 20% of population to be crossovered
+//        List<Chromosome> crossovered = population.getCrossovered();
+//        //extract 20% of population to be mutated
+//        List<Chromosome> mutated = population.getMutated();
+//        //apply crossover
+//        List<Chromosome> children = new ArrayList<>();
+//        for (int i = 0; i < crossovered.size(); i += 2) {
+//            Pair<Chromosome, Chromosome> pair = crossover(crossovered.get(i), crossovered.get(i + 1));
+//            children.add(pair.getLeft());
+//            children.add(pair.getRight());
+//        }
     }
 
     //check if a list of assigned job contains job id duplicates
