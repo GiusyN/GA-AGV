@@ -33,15 +33,16 @@ public class Individual {
     //    4      0
 
 
-    public static Individual generate(List<AssignedJob> assignedJobs) {
+    public static Individual generate(List<AssignedJob> assignedJobs) throws BatteryException, GAInconsistencyException {
         Individual individual = new Individual();
         individual.numAGV = getNumAGV(assignedJobs);
         individual.jobs.addAll(assignedJobs);
         individual.dirty = false;
         //init avg map
-        for(AssignedJob job : assignedJobs){
+        for (AssignedJob job : assignedJobs) {
             individual.agvByIDMap.put(job.getAgv().getId(), job.getAgv());
         }
+        individual.calculateReloads();
         return individual;
     }
 
@@ -137,7 +138,6 @@ public class Individual {
         System.out.println("--------------------------------------------------------------------");
 
 
-
         //fill all avg to max battery capacity
         for (AGV agv : agvByIDMap.values()) {
             agv.fill();
@@ -156,7 +156,7 @@ public class Individual {
             AssignedJob assignedJob = iterator.next();
             AGV agv = assignedJob.getAgv();
             int energy = assignedJob.getJob().getEnergy();
-            System.out.println("the next job costs: " + energy + " and the agv n."+agv.getId()+" has: " + agv.getBatteryLevel());
+            System.out.println("the next job costs: " + energy + " and the agv n." + agv.getId() + " has: " + agv.getBatteryLevel());
 
             if (agv.getBatteryLevel() < energy) {  //se NON ho energia sufficiente per il prossimo job
                 //inserire il nodo di ricarica
@@ -186,14 +186,14 @@ public class Individual {
                     //         R3        2 task
                     // massimizzare in base al numero di task e minimizzare in base alla quantità di ricarica
                     for (Integer reloadPossibility : allReloadsPossibilities) {
-                        if(reloadPossibility == 5){
+                        if (reloadPossibility == 5) {
                             System.out.println("debug");
                         }
 
                         int numTask = 1;
                         int energyLeft = agv.getBatteryLevel() + reloadPossibility;
                         int nextIndex = index + 1;
-                        while (nextIndex < jobs.size() && jobs.get(nextIndex).getAgv().getId() == agv.getId()  && energyLeft- jobs.get(nextIndex).getJob().getEnergy() >= jobs.get(nextIndex).getJob().getEnergy()) {
+                        while (nextIndex < jobs.size() && jobs.get(nextIndex).getAgv().getId() == agv.getId() && energyLeft - jobs.get(nextIndex).getJob().getEnergy() >= jobs.get(nextIndex).getJob().getEnergy()) {
                             energyLeft -= jobs.get(nextIndex).getJob().getEnergy();
                             numTask++;
                             nextIndex++;
@@ -327,26 +327,28 @@ public class Individual {
         return this.fitness;
     }
 
-    public String printJobs(boolean withReload) {
-        StringBuilder sb = new StringBuilder();
+    public Pair<String,String> printJobs(boolean withReload) {
+        StringBuilder sb_jobs = new StringBuilder();
+        StringBuilder sb_agv = new StringBuilder();
         for (AssignedJob job : jobs) {
             if (job.getJob() instanceof ReloadJob && withReload) {
-                    sb.append("R").append(job.getJob().getId()).append(" ");
-            }else{
-                continue;
+                sb_jobs.append("R").append(job.getJob().getId()).append(" ");
+            } else {
+                sb_jobs.append("J").append(job.getJob().getId()).append(" ");
             }
-            sb.append("J").append(job.getJob().getId()).append(" ");
+
         }
-        sb.append(" | ");
+        String stinrg_jobs = sb_jobs.toString();
         for (AssignedJob job : jobs) {
             if (job.getJob() instanceof ReloadJob && withReload) {
-                    sb.append("R").append(job.getJob().getId()).append(" ");
-            }else{
-                continue;
+                sb_agv.append("R").append(job.getJob().getId()).append(" ");
+            } else {
+                sb_agv.append("A").append(job.getAgv().getId()).append(" ");
             }
-            sb.append("A").append(job.getAgv().getId()).append(" ");
+
         }
-        return sb.toString();
+        String string_agv = sb_agv.toString();
+        return new ImmutablePair<String, String>(stinrg_jobs, string_agv);
     }
 
     public List<AssignedJob> getReloadJobs() {

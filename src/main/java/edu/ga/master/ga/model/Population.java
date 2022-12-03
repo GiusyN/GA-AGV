@@ -5,8 +5,10 @@
 package edu.ga.master.ga.model;
 
 import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  *
@@ -40,9 +42,20 @@ public class Population {
         System.out.println("Tempo massimo di durata di un job: " + Settings.getInstance().getMaxTime());
         System.out.println("Numero di job: " + Settings.getInstance().getNumberOfJobs());
         System.out.println("***************************************************************************************");
+
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%12s | %60s | %60s | %8s | %10s |", "INDIVIDUAL","JOB & RELOADS ASSIGNEMENTS", "AGV ASSIGNEMENT", "N. AGV", "FITNESS");
+        System.out.println();
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
         for (int i = 0; i < size; i++) {
-            System.out.print("Individual " + i + ": ");
-            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
+//            System.out.print("Individual " + i + ": ");
+            Pair<String, String> stringStringPair = individuals[i].printJobs(withReloads);
+            String jobAssignement = stringStringPair.getLeft();
+            String agvAssignement = stringStringPair.getRight();
+            System.out.printf("%12s | %60s | %60s | %8s | %10s |" , ""+i,jobAssignement, agvAssignement, individuals[i].getNumAGV(),""+individuals[i].getFitness());
+            System.out.println();
+//            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
     }
 
@@ -57,7 +70,8 @@ public class Population {
         for (int i = 0; i < size; i++) {
             try {
                 individuals[i] = new Individual(Utils.randomInRange(minimumAGV, maximumAGV));
-            } catch (BatteryException e) {
+                individuals[i].calculateReloads();
+            } catch (GAInconsistencyException | BatteryException e) {
                 throw new RuntimeException(e);
             }
         }

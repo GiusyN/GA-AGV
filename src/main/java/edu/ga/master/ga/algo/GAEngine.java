@@ -62,7 +62,7 @@ public class GAEngine {
                     }
                 }
             }
-        }while (checkDuplicateJobId(child1));
+        } while (checkDuplicateJobId(child1));
         //check if there are duplicates
 
 //        for (int i = 0; i < child1.size(); i++) {
@@ -148,38 +148,45 @@ public class GAEngine {
         fixDuplicate(child1AssignedJobs, child2AssignedJobs, startCrossPoint, endCrossPoint);
         fixDuplicate(child2AssignedJobs, child1AssignedJobs, startCrossPoint, endCrossPoint);
 
-        Individual kid1 = Individual.generate(child1AssignedJobs);
-        Individual kid2 = Individual.generate(child2AssignedJobs);
-
-        //------------------------------------------------------------------------------------------
-        //opero il crossover sugli agv
-        int swapPoint = child1AssignedJobs.size() / 2;
-
-        //swap the first half of assigned agv from the kid1 to the kid2
-        System.out.println("swapPoint: " + swapPoint);
-
-        for (int i = 0; i < swapPoint; i++) {
-            kid1.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
-            kid2.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
-        }
-        for (int i = swapPoint; i < child1AssignedJobs.size(); i++) {
-            kid1.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
-            kid2.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
-        }
-
-
+        Individual kid1 = null;
+        Individual kid2 = null;
         try {
-            kid1.setTestcode("KID1");
-            kid2.setTestcode("KID2");
+            kid1 = Individual.generate(child1AssignedJobs);
+            kid2 = Individual.generate(child2AssignedJobs);
 
-            kid1.calculateReloads();
-            kid2.calculateReloads();
-        } catch (BatteryException e) {
+
+            //------------------------------------------------------------------------------------------
+            //opero il crossover sugli agv
+            int swapPoint = child1AssignedJobs.size() / 2;
+
+            //swap the first half of assigned agv from the kid1 to the kid2
+            System.out.println("swapPoint: " + swapPoint);
+
+            for (int i = 0; i < swapPoint; i++) {
+                kid1.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
+                kid2.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
+            }
+            for (int i = swapPoint; i < child1AssignedJobs.size(); i++) {
+                kid1.getAssignedJobs().get(i).setAgv(agvsMum.get(i));
+                kid2.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
+            }
+
+
+            try {
+                kid1.setTestcode("KID1");
+                kid2.setTestcode("KID2");
+
+                kid1.calculateReloads();
+                kid2.calculateReloads();
+            } catch (BatteryException e) {
+                e.printStackTrace();
+                System.exit(0);
+            } catch (GAInconsistencyException e) {
+                e.printStackTrace();
+                System.exit(0);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            System.exit(0);
-        } catch (GAInconsistencyException e) {
-            e.printStackTrace();
-            System.exit(0);
         }
 
         System.out.println("************************** END CROSSOVER **************************");
