@@ -4,6 +4,7 @@
  */
 package edu.ga.master.ga;
 
+import edu.ga.master.ga.cli.ConsoleColors;
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
 import edu.ga.master.ga.model.Individual;
@@ -12,6 +13,8 @@ import edu.ga.master.ga.model.Population;
 import edu.ga.master.ga.model.impl.FakeJobGenerator;
 import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
+import org.fusesource.jansi.AnsiConsole;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,8 +25,9 @@ import java.util.logging.Logger;
 public class MasterThesisGa {
 
     public static void main(String[] args) throws BatteryException {
+        AnsiConsole.systemInstall();
         try {
-            System.out.println("Hello World!");
+            System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
             System.out.println("Ciao Luca come va tutt'appost ?");
 
             Settings.getInstance().setBatteryCapacity(5);
