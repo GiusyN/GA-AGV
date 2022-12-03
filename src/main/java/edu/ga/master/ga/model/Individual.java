@@ -14,6 +14,8 @@ import java.util.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.swing.*;
+
 /**
  * @author sommovir
  */
@@ -42,7 +44,6 @@ public class Individual {
         for (AssignedJob job : assignedJobs) {
             individual.agvByIDMap.put(job.getAgv().getId(), job.getAgv());
         }
-        individual.calculateReloads();
         return individual;
     }
 
@@ -68,9 +69,9 @@ public class Individual {
     }
 
 
-    public Individual(int numAGV) throws BatteryException {
+    public Individual(int numAGV) throws BatteryException, GAInconsistencyException {
         this.numAGV = numAGV;
-        List<WorkJob> workJobs = JobManager.getInstance().getJobs();
+        LinkedList <WorkJob> workJobs = JobManager.getInstance().getJobs();
 
         //init startTime per AGV
 
@@ -122,6 +123,10 @@ public class Individual {
     }
 
     public void calculateReloads() throws BatteryException, GAInconsistencyException {
+
+        JOptionPane.showMessageDialog(null, "CALCULATE RELOADS");
+
+        this.clearReloads();
 
         System.out.println(" ------------------------ CALCULATE RELOADS ------------------------ ");
         System.out.println(" testcode: " + testcode);
@@ -369,5 +374,12 @@ public class Individual {
             }
         }
         return workJobs;
+    }
+
+    public void clearReloads() {
+        List<AssignedJob> reloadJobs = getReloadJobs();
+        for (AssignedJob reloadJob : reloadJobs) {
+            jobs.remove(reloadJob);
+        }
     }
 }

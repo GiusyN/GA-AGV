@@ -96,6 +96,9 @@ public class GAEngine {
 
     public Pair<Individual, Individual> crossover(@NotNull Individual dad, @NotNull Individual mum) {
 
+        dad.clearReloads();
+        mum.clearReloads();
+
         List<AssignedJob> dadWorkJobs = dad.getWorkJobs();
         List<AssignedJob> mumWorkJobs = mum.getWorkJobs();
 
@@ -175,6 +178,7 @@ public class GAEngine {
             try {
                 kid1.setTestcode("KID1");
                 kid2.setTestcode("KID2");
+
 
                 kid1.calculateReloads();
                 kid2.calculateReloads();

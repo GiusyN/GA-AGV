@@ -70,7 +70,6 @@ public class Population {
         for (int i = 0; i < size; i++) {
             try {
                 individuals[i] = new Individual(Utils.randomInRange(minimumAGV, maximumAGV));
-                individuals[i].calculateReloads();
             } catch (GAInconsistencyException | BatteryException e) {
                 throw new RuntimeException(e);
             }

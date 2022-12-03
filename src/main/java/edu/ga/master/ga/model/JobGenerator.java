@@ -4,6 +4,7 @@
  */
 package edu.ga.master.ga.model;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,6 +13,6 @@ import java.util.List;
  */
 public interface JobGenerator {
 
-    public List<WorkJob> generate(int n);
+    public LinkedList<WorkJob> generate(int n);
 
 }

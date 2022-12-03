@@ -10,6 +10,7 @@ import edu.ga.master.ga.model.WorkJob;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,8 +20,8 @@ import java.util.List;
 public class RealJobGenerator implements JobGenerator{
 
     @Override
-    public List<WorkJob> generate(int n) {
-        List<WorkJob> jobs = new ArrayList<>(n);
+    public LinkedList<WorkJob> generate(int n) {
+        LinkedList<WorkJob> jobs = new LinkedList<>();
         for (int i = 0; i < n; i++) {
            jobs.add(new WorkJob(
                    i,  //id

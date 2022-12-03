@@ -6,6 +6,7 @@ package edu.ga.master.ga;
 
 import edu.ga.master.ga.cli.ConsoleColors;
 import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
 import edu.ga.master.ga.model.Individual;
 import edu.ga.master.ga.model.JobManager;
@@ -62,6 +63,9 @@ public class MasterThesisGa {
 
         } catch (BatteryException ex) {
             ex.printStackTrace();
+        } catch (GAInconsistencyException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
     }

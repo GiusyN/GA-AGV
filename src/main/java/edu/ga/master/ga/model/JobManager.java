@@ -9,6 +9,7 @@ import edu.ga.master.ga.model.impl.FakeJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 public class JobManager {
     
     private static JobManager _instance = null;
-    private List<WorkJob> jobs = null;
+    private LinkedList<WorkJob> jobs = null;
     private JobGenerator jobGenerator = null;
     
     public static JobManager getInstance() {
@@ -45,7 +46,7 @@ public class JobManager {
         this.jobs = jobGenerator.generate(n);
     }
 
-    public List<WorkJob> getJobs() {
+    public LinkedList<WorkJob> getJobs() {
         return jobs;
     }
     

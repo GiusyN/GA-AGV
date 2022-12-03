@@ -86,11 +86,12 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>it.unina.ceccarino.gaforjss.Main</mainClass>
+                            <mainClass>edu.ga.master.ga.MasterThesisGa</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
+
         </plugins>
 
     </build>

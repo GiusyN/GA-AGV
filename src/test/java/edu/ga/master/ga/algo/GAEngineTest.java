@@ -2,6 +2,7 @@ package edu.ga.master.ga.algo;
 
 
 import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.model.*;
 import edu.ga.master.ga.model.impl.FakeJobGenerator;
 import edu.ga.master.ga.model.impl.RealJobGenerator;
@@ -236,6 +237,8 @@ class GAEngineTest {
             assertArrayEquals(solutionJobIdKID2, actualJObIdKID2);
         } catch (BatteryException e) {
             throw new RuntimeException(e);
+        } catch (GAInconsistencyException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -396,6 +399,8 @@ class GAEngineTest {
             //check if the job id of the kid are the same of the solution in the same exact order
             assertArrayEquals(solutionJobIdKID2, actualJObIdKID2);
         } catch (BatteryException e) {
+            throw new RuntimeException(e);
+        } catch (GAInconsistencyException e) {
             throw new RuntimeException(e);
         }
 
@@ -559,7 +564,25 @@ class GAEngineTest {
 
         } catch (BatteryException e) {
             throw new RuntimeException(e);
+        } catch (GAInconsistencyException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+
+    //test if clearReloads works
+    @Test
+    public void testClearReloads(){
+        try {
+            Individual individual = new Individual(2);
+            individual.calculateReloads();
+            assertTrue(individual.getReloadJobs().size() != 0);
+            individual.clearReloads();
+            assertTrue(individual.getReloadJobs().size() == 0);
+        } catch (GAInconsistencyException | BatteryException e) {
+            assertTrue(false);
+        }
+
     }
 
 }
