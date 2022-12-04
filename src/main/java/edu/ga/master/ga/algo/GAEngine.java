@@ -16,7 +16,7 @@ import java.util.List;
 public class GAEngine {
 
     private static GAEngine instance;
-    private int numberOfCicles = 300;
+    private int numberOfCycles = 300;
 
     public enum SELECTION {
         TOURNAMENT, RANDOM
@@ -36,11 +36,11 @@ public class GAEngine {
     }
 
     public int getNumberOfCycles() {
-        return numberOfCicles;
+        return numberOfCycles;
     }
 
-    public void setNumberOfCicles(int numberOfCicles) {
-        this.numberOfCicles = numberOfCicles;
+    public void setNumberOfCycles(int numberOfCicles) {
+        this.numberOfCycles = numberOfCicles;
     }
 
     public void run(Population population) throws BatteryException, GAInconsistencyException {
@@ -50,7 +50,7 @@ public class GAEngine {
 
         //cicle until max cycle
         int cycle = 0;
-        while (cycle < numberOfCicles) {
+        while (cycle < numberOfCycles) {
 
 
             List<Pair<Individual,Individual>> crossoverCandidates = new ArrayList<>();
@@ -134,11 +134,11 @@ public class GAEngine {
     }
 
     public int getMaxCycle() {
-        return numberOfCicles;
+        return numberOfCycles;
     }
 
     public void setMaxCycle(int maxCycle) {
-        this.numberOfCicles = maxCycle;
+        this.numberOfCycles = maxCycle;
     }
 
     //check if a list of assigned job contains job id duplicates

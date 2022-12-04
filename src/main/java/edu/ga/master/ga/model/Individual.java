@@ -54,7 +54,23 @@ public class Individual implements Comparable<Individual> {
         for (AssignedJob job : assignedJobs) {
             individual.agvByIDMap.put(job.getAgv().getId(), job.getAgv());
         }
+        //individual.initMaps();
+
+
         return individual;
+    }
+
+    public void initMaps() {
+        for (int i = 1; i <= this.numAGV; i++) {
+            agvStartTimeMap.put(i, 0);
+            AGV agv = null;
+            try {
+                agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
+            } catch (BatteryException e) {
+                throw new RuntimeException(e);
+            }
+            agvByIDMap.put(agv.getId(), agv);
+        }
     }
 
     public void setTestcode(String testcode) {
@@ -288,6 +304,9 @@ public class Individual implements Comparable<Individual> {
         for (AGV agv : agvByIDMap.values()) {
             agv.fill();
         }
+        for(AssignedJob assignedJob : jobs) {
+            assignedJob.getAgv().fill();
+        }
 
         //print temporary solution with reloads
         if(Settings.getInstance().isVerbose()) {
@@ -313,15 +332,33 @@ public class Individual implements Comparable<Individual> {
         if(Settings.getInstance().isVerbose()) {
             System.out.println(" SOLUTION WITH RELOADS AND CALCULATION OF BATTERY LEVELS");
         }
+
+        //stampa tutti i valori nella agv map
+        if(Settings.getInstance().isVerbose()) {
+            for (AGV agv : agvByIDMap.values()) {
+                System.out.println("AGV " + agv.getId() + " - BATTERY: " + agv.getBatteryLevel() + (agv.getBatteryLevel() == Settings.getInstance().getBatteryCapacity() ? " (FULL)" : ""));
+            }
+        }
+        System.out.println("--------------------- FINE CHECK MAPPE ----------------------------");
+
         for (AssignedJob assignedJob : jobs) {
             AGV agv = assignedJob.getAgv();
+            System.out.println(agv);
             int penalty = 0;
             if (assignedJob.getJob() instanceof ReloadJob) {
                 penalty = 1;
                 agv.reload(assignedJob.getJob().getEnergy());
             } else {
+                System.out.println("ORA SUL AGV CI STA: " + assignedJob.getAgv().getBatteryLevel() + " e sto togliendo energia: "+assignedJob.getJob().getEnergy());
                 agv.work(assignedJob.getJob().getEnergy());
             }
+            if(agvStartTimeMap==null) {
+                JOptionPane.showMessageDialog(null, "AGV START TIME MAP IS NULL");
+            }
+            if(agvStartTimeMap.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "AGV START TIME MAP IS EMPTY");
+            }
+
             int startTime = agvStartTimeMap.get(agv.getId());
             int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
             assignedJob.setStartTime(startTime);
@@ -422,6 +459,10 @@ public class Individual implements Comparable<Individual> {
         for (AssignedJob reloadJob : reloadJobs) {
             jobs.remove(reloadJob);
         }
+        //refill all avg batteries
+        for (AGV agv : agvByIDMap.values()) {
+            agv.fill();
+        }
     }
 
     @Override
@@ -458,7 +499,7 @@ public class Individual implements Comparable<Individual> {
             for (AssignedJob job : jobs) {
                 cloneJobs.add(job.clone());
             }
-            clone = Individual.generate(this.getAssignedJobs());
+            clone = Individual.generate(cloneJobs);
         } catch (BatteryException e) {
             throw new RuntimeException(e);
         } catch (GAInconsistencyException e) {
