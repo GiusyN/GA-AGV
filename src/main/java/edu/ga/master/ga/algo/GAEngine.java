@@ -3,6 +3,7 @@ package edu.ga.master.ga.algo;
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.model.*;
+import edu.ga.master.ga.utils.Settings;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,13 @@ import java.util.List;
 public class GAEngine {
 
     private static GAEngine instance;
+    private int numberOfCicles = 300;
+
+    public enum SELECTION {
+        TOURNAMENT, RANDOM
+    };
+
+    private SELECTION selectionStrategy = SELECTION.RANDOM;
 
     private GAEngine() {
 
@@ -27,23 +35,110 @@ public class GAEngine {
         return instance;
     }
 
-    public void run() {
+    public int getNumberOfCycles() {
+        return numberOfCicles;
+    }
+
+    public void setNumberOfCicles(int numberOfCicles) {
+        this.numberOfCicles = numberOfCicles;
+    }
+
+    public void run(Population population) throws BatteryException, GAInconsistencyException {
         //init population
-//        Population population = new Population();
-//        population.init();
-//        //extract 20% of population
-//        List<Chromosome> elite = population.getElite();
-//        //extract 20% of population to be crossovered
-//        List<Chromosome> crossovered = population.getCrossovered();
-//        //extract 20% of population to be mutated
-//        List<Chromosome> mutated = population.getMutated();
-//        //apply crossover
-//        List<Chromosome> children = new ArrayList<>();
-//        for (int i = 0; i < crossovered.size(); i += 2) {
-//            Pair<Chromosome, Chromosome> pair = crossover(crossovered.get(i), crossovered.get(i + 1));
-//            children.add(pair.getLeft());
-//            children.add(pair.getRight());
-//        }
+
+
+
+        //cicle until max cycle
+        int cycle = 0;
+        while (cycle < numberOfCicles) {
+
+
+            List<Pair<Individual,Individual>> crossoverCandidates = new ArrayList<>();
+            int howManyCrossoverCandidates = (int) (Settings.getInstance().getPopulationSize()  * Settings.getInstance().getCrossoverProbability());
+
+            for (int i = 0; i < howManyCrossoverCandidates; i++) {
+                Pair<Individual, Individual> parents = population.selectParents();
+                crossoverCandidates.add(parents);
+            }
+            List<Individual> children = new ArrayList<>();
+            for (Pair<Individual, Individual> parents : crossoverCandidates) {
+                Pair<Individual, Individual> childrenPair = crossover(parents.getLeft(), parents.getRight());
+                children.add(childrenPair.getLeft());
+                children.add(childrenPair.getRight());
+            }
+
+            //mutation
+            List<Individual> mutatedChildren = new ArrayList<>();
+            float mutationProbability = Settings.getInstance().getMutationProbability();
+            //mutation over new children
+            for (Individual child : children) {
+                if (Math.random() < mutationProbability) {
+                    mutatedChildren.add(mutation(child));
+                }
+            }
+            //mutation over old population excluding elites
+            int eliteIndex = Settings.getInstance().getElitism();
+            for (int i = eliteIndex; i < Settings.getInstance().getPopulationSize(); i++) {
+                if (Math.random() < mutationProbability) {
+                    mutatedChildren.add(mutation(population.getIndividuals()[i]));
+                }
+            }
+
+            //merge all children and mutated children and old population in a same list
+            List<Individual> allIndividuals = new ArrayList<>();
+            for (int i = 0; i < population.getIndividuals().length; i++) {
+                allIndividuals.add(population.getIndividuals()[i]);
+            }
+            allIndividuals.addAll(children);
+            allIndividuals.addAll(mutatedChildren);
+            //sort all individuals by fitness
+            allIndividuals.sort((o1, o2) -> {
+                if (o1.getFitness() > o2.getFitness()) {
+                    return -1;
+                } else if (o1.getFitness() < o2.getFitness()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
+            //remove the worst individuals
+            int howManyToRemove = allIndividuals.size() - Settings.getInstance().getPopulationSize();
+            for (int i = 0; i < howManyToRemove; i++) {
+                allIndividuals.remove(allIndividuals.size() - 1);
+            }
+
+
+
+            //increment cycle
+            cycle++;
+
+            //extract best individual
+            Individual bestIndividual = allIndividuals.get(0);
+            //print iteration
+            System.out.println("Iteration: " + cycle + " Best fitness: " + bestIndividual.getFitness());
+            //print best individual
+            System.out.println("Best individual: " + bestIndividual);
+            System.out.println("-------------------------------------------------------------------------------------");
+        }
+
+
+
+
+
+
+    }
+
+    private Individual mutation(Individual child) throws BatteryException, GAInconsistencyException {
+        return child.mutate();
+    }
+
+    public int getMaxCycle() {
+        return numberOfCicles;
+    }
+
+    public void setMaxCycle(int maxCycle) {
+        this.numberOfCicles = maxCycle;
     }
 
     //check if a list of assigned job contains job id duplicates
@@ -92,20 +187,21 @@ public class GAEngine {
 //            }
 //        }
 
+        if(Settings.getInstance().isVerbose()) {
+            //CHILD 1
+            System.out.println("---------------------- child1 ----------------------");
+            for (AssignedJob job : child1) {
+                System.out.println("JOB: " + job);
 
-        //CHILD 1
-        System.out.println("---------------------- child1 ----------------------");
-        for (AssignedJob job : child1) {
-            System.out.println("JOB: " + job);
+            }
+            //CHILD 2
+            System.out.println("---------------------- child2 ----------------------");
+            for (AssignedJob job : child2) {
+                System.out.println("JOB: " + job);
+            }
 
+            System.out.println("----------------------------------------------------");
         }
-        //CHILD 2
-        System.out.println("---------------------- child2 ----------------------");
-        for (AssignedJob job : child2) {
-            System.out.println("JOB: " + job);
-        }
-
-        System.out.println("----------------------------------------------------");
 
     }
 
@@ -150,18 +246,19 @@ public class GAEngine {
             }
         }
 
-        //print child1
-        System.out.println("---------------------- child1 AFTER SWAP ----------------------");
-        for (AssignedJob job : child1AssignedJobs) {
-            System.out.println("JOB: " + job);
-        }
-        //print child2
-        System.out.println("---------------------- child2 AFTER SWAP ----------------------");
-        for (AssignedJob job : child2AssignedJobs) {
-            System.out.println("JOB: " + job);
+        if(Settings.getInstance().isVerbose()) {
+            //print child1
+            System.out.println("---------------------- child1 AFTER SWAP ----------------------");
+            for (AssignedJob job : child1AssignedJobs) {
+                System.out.println("JOB: " + job);
+            }
+            //print child2
+            System.out.println("---------------------- child2 AFTER SWAP ----------------------");
+            for (AssignedJob job : child2AssignedJobs) {
+                System.out.println("JOB: " + job);
+            }
         }
 
-        //TODO test swap ^
 
         fixDuplicate(child1AssignedJobs, child2AssignedJobs, startCrossPoint, endCrossPoint);
         fixDuplicate(child2AssignedJobs, child1AssignedJobs, startCrossPoint, endCrossPoint);
@@ -194,7 +291,6 @@ public class GAEngine {
                 kid1.setTestcode("KID1");
                 kid2.setTestcode("KID2");
 
-
                 kid1.calculateReloads();
                 kid2.calculateReloads();
             } catch (BatteryException e) {
@@ -207,11 +303,20 @@ public class GAEngine {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println("************************** END CROSSOVER **************************");
+        if(Settings.getInstance().isVerbose()) {
+            System.out.println("************************** END CROSSOVER **************************");
+        }
         return new ImmutablePair<>(kid1, kid2);
     }
 
+
+    public void setSelectionStrategy(SELECTION selectionStrategy) {
+        this.selectionStrategy = selectionStrategy;
+    }
+
+    public SELECTION getSelectionStrategy() {
+        return selectionStrategy;
+    }
 
     public static void main(String[] args) {
         System.out.println("8/3 = " + 8 / 3);

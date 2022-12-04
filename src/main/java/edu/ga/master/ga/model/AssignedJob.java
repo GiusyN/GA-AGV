@@ -62,5 +62,10 @@ public class AssignedJob {
         String type = this.job instanceof ReloadJob ? "RELOAD" : "WORK";
         return "AssignedJob{" + "job=" + job + "["+type+"], \tagv = " + agv + ", startTime=" + startTime + ", endTime=" + endTime + '}';
     }
-   
+
+
+    //clone method
+    public AssignedJob clone(){
+        return new AssignedJob(this.job, this.agv, this.startTime, this.endTime);
+    }
 }

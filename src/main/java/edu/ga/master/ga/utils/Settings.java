@@ -21,6 +21,11 @@ public class Settings {
     private int populationSize = 100;
     private int numberOfJobs = 6;
 
+    private float crossoverProbability = 0.2f; //percentuale di crossover da applicare alla popolazione
+    private float  mutationProbability = 0.2f; //20%
+    private int elitism = 10; //numero di individui da mantenere nella popolazione
+    private boolean verbose = true;
+
     
     public static Settings getInstance() {
         if (_instance == null) {
@@ -81,4 +86,34 @@ public class Settings {
         return populationSize;
     }
 
+    public void setCrossoverProbability(float crossoverProbability) {
+        this.crossoverProbability = crossoverProbability;
+    }
+
+    public float getCrossoverProbability() {
+        return crossoverProbability;
+    }
+
+    public void setMutationProbability(float mutationProbability) {
+        this.mutationProbability = mutationProbability;
+    }
+
+    public float getMutationProbability() {
+        return mutationProbability;
+    }
+
+    public void setElitism(int elitism) {
+        this.elitism = elitism;
+    }
+    public int getElitism() {
+        return elitism;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
 }

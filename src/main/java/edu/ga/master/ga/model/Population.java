@@ -4,6 +4,7 @@
  */
 package edu.ga.master.ga.model;
 
+import edu.ga.master.ga.algo.GAEngine;
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.utils.Settings;
@@ -24,6 +25,52 @@ public class Population {
     private int minimumAGV;
     private int maximumAGV;
     public static DISTRIBUTION distribution;
+
+
+    public Pair<Individual, Individual> selectParents() throws GAInconsistencyException {
+
+        //si suppone che l'array di individui sia già ordinato in base alla fitness in ordine decrecente
+
+
+        Individual parent1 = null;
+        Individual parent2 = null;
+        switch (GAEngine.getInstance().getSelectionStrategy()) {
+            case RANDOM:
+                parent1 = individuals[Utils.randomInRange(0, individuals.length)].clone();
+                parent2 = individuals[Utils.randomInRange(0, individuals.length)].clone();
+                break;
+            case TOURNAMENT:
+                parent1 = individuals[Utils.randomInRange(0, individuals.length)];
+                parent2 = individuals[Utils.randomInRange(0, individuals.length)];
+                if (parent1.getFitness() < parent2.getFitness()) {
+                    parent1 = parent2;
+                }
+                break;
+            default:
+                throw new GAInconsistencyException("Distribution is not set");
+        }
+        return Pair.of(parent1, parent2);
+    }
+
+    public Individual[] getIndividuals() {
+        return individuals;
+    }
+
+    public void replace(List<Individual> children) {
+        //si suppone che la lista di figli sia già ordinata in base alla fitness in ordine decrecente
+
+        //se un figlio ha fitness minore di un individuo della popolazione, lo sostituisco
+        for (Individual child : children) {
+            for (int i = 0; i < individuals.length; i++) {
+                if (child.getFitness() > individuals[i].getFitness()) {
+                    individuals[i] = child;
+                    break;
+                }
+            }
+        }
+
+
+    }
 
     public enum DISTRIBUTION {
         EQUAL, RANDOM
