@@ -33,9 +33,9 @@ public class MasterThesisGa {
             Settings.getInstance().setBatteryCapacity(10);
             Settings.getInstance().setMaxTime(5);
             Settings.getInstance().setPopulationSize(100);
-            Settings.getInstance().setNumberOfJobs(20);
+            Settings.getInstance().setNumberOfJobs(15);
             JobManager.getInstance().init(new RealJobGenerator());
-            JobManager.getInstance().generateJobs(6); //TODO FIX DUPLICATE SETTINGS ENTRY
+            JobManager.getInstance().generateJobs();
             try {
                 JobManager.getInstance().printJobs();
             } catch (NoGeneratedJobsException ex) {
