@@ -52,6 +52,10 @@ public class GAEngine {
         int cycle = 0;
         while (cycle < numberOfCycles) {
 
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            System.out.println("                     C Y C L E  " + cycle + "                     ");
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
 
             List<Pair<Individual,Individual>> crossoverCandidates = new ArrayList<>();
             int howManyCrossoverCandidates = (int) (Settings.getInstance().getPopulationSize()  * Settings.getInstance().getCrossoverProbability());
@@ -207,8 +211,44 @@ public class GAEngine {
 
     public Pair<Individual, Individual> crossover(@NotNull Individual dad, @NotNull Individual mum) {
 
+
+
+        //TEST
+        //print dad
+        System.out.println(" BEFORE CROSSOVER DELLA MINCHIA");
+        System.out.println("----------------- DAD -------------");
+        System.out.println("dad: ");
+        Pair<String, String> printDadStringedJobs = dad.printJobs(true);
+        String s_dad_jobAssignement = printDadStringedJobs.getLeft();
+        String s_dad_agvAssignement = printDadStringedJobs.getRight();
+        //format fitness in 2 decimali
+        String dad_fitness = String.format("%.2f", dad.getFitness());
+        System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XY",s_dad_jobAssignement, s_dad_agvAssignement, dad.getNumAGV(),""+dad_fitness);
+        System.out.println("dad fitness: " + dad.getFitness());
+        System.out.println("-----------------------------------");
+        //print mum
+        System.out.println("----------------- MUM -------------");
+        System.out.println("mum: ");
+        dad.printJobs(true);
+        Pair<String, String> printMumStringedJobs = mum.printJobs(true);
+        String s_mum_jobAssignement = printMumStringedJobs.getLeft();
+        String s_mum_agvAssignement = printMumStringedJobs.getRight();
+        //format fitness in 2 decimali
+        String mum_fitness = String.format("%.2f", mum.getFitness());
+        System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XX",s_mum_jobAssignement, s_mum_agvAssignement, mum.getNumAGV(),""+mum_fitness);
+        System.out.println("mum fitness: " + mum.getFitness());
+        System.out.println("-----------------------------------");
+
+
+
+
+
         dad.clearReloads();
         mum.clearReloads();
+
+
+
+
 
         List<AssignedJob> dadWorkJobs = dad.getWorkJobs();
         List<AssignedJob> mumWorkJobs = mum.getWorkJobs();
@@ -260,6 +300,18 @@ public class GAEngine {
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         fixDuplicate(child1AssignedJobs, child2AssignedJobs, startCrossPoint, endCrossPoint);
         fixDuplicate(child2AssignedJobs, child1AssignedJobs, startCrossPoint, endCrossPoint);
 
@@ -268,6 +320,35 @@ public class GAEngine {
         try {
             kid1 = Individual.generate(child1AssignedJobs);
             kid2 = Individual.generate(child2AssignedJobs);
+
+
+
+            //TEST 2
+            System.out.println(" AFTER CROSSOVER DELLA MINCHIA");
+            System.out.println("----------------- kid1 -------------");
+            System.out.println("kid1: ");
+            Pair<String, String> printDadStringedJobs2 = kid1.printJobs(true);
+            String s_dad_jobAssignement2 = printDadStringedJobs2.getLeft();
+            String s_dad_agvAssignement2 = printDadStringedJobs2.getRight();
+            //format fitness in 2 decimali
+            String dad_fitness2 = String.format("%.2f", kid1.getFitness());
+            System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XY",s_dad_jobAssignement2, s_dad_agvAssignement2, kid1.getNumAGV(),""+dad_fitness2);
+            System.out.println("-----------------------------------");
+            //print mum
+            System.out.println("----------------- kid2 -------------");
+            System.out.println("kid2: ");
+            dad.printJobs(true);
+            Pair<String, String> printMumStringedJobs2 = kid2.printJobs(true);
+            String s_mum_jobAssignement2 = printMumStringedJobs2.getLeft();
+            String s_mum_agvAssignement2 = printMumStringedJobs2.getRight();
+            //format fitness in 2 decimali
+            String mum_fitness2 = String.format("%.2f", kid2.getFitness());
+            System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XX",s_mum_jobAssignement2, s_mum_agvAssignement2, kid2.getNumAGV(),""+mum_fitness2);
+            System.out.println("-----------------------------------");
+
+
+
+
 
 
             //------------------------------------------------------------------------------------------

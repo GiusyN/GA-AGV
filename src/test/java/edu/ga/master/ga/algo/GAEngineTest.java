@@ -103,6 +103,8 @@ class GAEngineTest {
 
         } catch (BatteryException e) {
             assertTrue(false, "non dovresti essere qui . .");
+        } catch (GAInconsistencyException e) {
+            assertTrue(false, "non dovresti essere qui . .");
         }
 
     }

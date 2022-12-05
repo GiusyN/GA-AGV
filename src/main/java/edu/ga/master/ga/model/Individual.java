@@ -184,6 +184,10 @@ public class Individual implements Comparable<Individual> {
         for (AGV agv : agvByIDMap.values()) {
             agv.fill();
         }
+        //fill all agv of jobs
+        for (AssignedJob job : jobs) {
+            job.getAgv().fill();
+        }
 
         //reset starTime helper map
         for (int i = 1; i <= this.numAGV; i++) {
@@ -331,6 +335,29 @@ public class Individual implements Comparable<Individual> {
 
         if(Settings.getInstance().isVerbose()) {
             System.out.println(" SOLUTION WITH RELOADS AND CALCULATION OF BATTERY LEVELS");
+            for (AssignedJob assignedJob : jobs) {
+                AGV agv = agvByIDMap.get(assignedJob.getAgv().getId());
+                int penalty = 0;
+                if (assignedJob.getJob() instanceof ReloadJob) {
+                    penalty = 1;
+                    System.out.println(" -- agv n. "+agv.getId());
+                    System.out.println( "-- reloading with " + ((ReloadJob) assignedJob.getJob()).getEnergy() + " energy, the avg battery level is now " + agv.getBatteryLevel());
+                    agv.reload(assignedJob.getJob().getEnergy());
+                } else {
+                    System.out.println(" -- agv n. "+agv.getId());
+                    System.out.println( "-- working with " + ((WorkJob) assignedJob.getJob()).getEnergy() + " energy, the avg battery level is now " + agv.getBatteryLevel());
+                    agv.work(assignedJob.getJob().getEnergy());
+                }
+                int startTime = agvStartTimeMap.get(agv.getId());
+                int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
+                assignedJob.setStartTime(startTime);
+                assignedJob.setEndTime(endTime);
+                if (endTime > this.makespan) {
+                    this.makespan = endTime;
+                }
+                agvStartTimeMap.put(agv.getId(), endTime);
+                System.out.println(assignedJob);
+            }
         }
 
         //stampa tutti i valori nella agv map
@@ -342,31 +369,32 @@ public class Individual implements Comparable<Individual> {
         System.out.println("--------------------- FINE CHECK MAPPE ----------------------------");
 
         for (AssignedJob assignedJob : jobs) {
-            AGV agv = assignedJob.getAgv();
-            System.out.println(agv);
-            int penalty = 0;
-            if (assignedJob.getJob() instanceof ReloadJob) {
-                penalty = 1;
-                agv.reload(assignedJob.getJob().getEnergy());
-            } else {
-                System.out.println("ORA SUL AGV CI STA: " + assignedJob.getAgv().getBatteryLevel() + " e sto togliendo energia: "+assignedJob.getJob().getEnergy());
-                agv.work(assignedJob.getJob().getEnergy());
-            }
-            if(agvStartTimeMap==null) {
-                JOptionPane.showMessageDialog(null, "AGV START TIME MAP IS NULL");
-            }
-            if(agvStartTimeMap.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "AGV START TIME MAP IS EMPTY");
-            }
+//            AGV agv = assignedJob.getAgv();
+//            System.out.println(agv);
+//            int penalty = 0;
+//            if (assignedJob.getJob() instanceof ReloadJob) {
+//                penalty = 1;
+//                System.out.println("ORA SUL AGV "+assignedJob.getAgv().getId()+" CI STA: " + assignedJob.getAgv().getBatteryLevel() + " e sto CARICANDO energia: "+assignedJob.getJob().getEnergy());
+//                agv.reload(assignedJob.getJob().getEnergy());
+//            } else {
+//                System.out.println("ORA SUL AGV "+assignedJob.getAgv().getId()+" CI STA: " + assignedJob.getAgv().getBatteryLevel() + " e sto togliendo energia: "+assignedJob.getJob().getEnergy());
+//                agv.work(assignedJob.getJob().getEnergy());
+//            }
+//            if(agvStartTimeMap==null) {
+//                JOptionPane.showMessageDialog(null, "AGV START TIME MAP IS NULL");
+//            }
+//            if(agvStartTimeMap.isEmpty()) {
+//                JOptionPane.showMessageDialog(null, "AGV START TIME MAP IS EMPTY");
+//            }
 
-            int startTime = agvStartTimeMap.get(agv.getId());
-            int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
-            assignedJob.setStartTime(startTime);
-            assignedJob.setEndTime(endTime);
-            if (endTime > this.makespan) {
-                this.makespan = endTime;
-            }
-            agvStartTimeMap.put(agv.getId(), endTime);
+//            int startTime = agvStartTimeMap.get(agv.getId());
+//            int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
+//            assignedJob.setStartTime(startTime);
+//            assignedJob.setEndTime(endTime);
+//            if (endTime > this.makespan) {
+//                this.makespan = endTime;
+//            }
+//            agvStartTimeMap.put(agv.getId(), endTime);
             if(Settings.getInstance().isVerbose()) {
                 System.out.println(assignedJob);
             }
@@ -456,6 +484,10 @@ public class Individual implements Comparable<Individual> {
 
     public void clearReloads() {
         List<AssignedJob> reloadJobs = getReloadJobs();
+        //sprint ize of reloads
+        if(Settings.getInstance().isVerbose()) {
+            System.out.println("SIZE OF RELOAD JOBS: " + reloadJobs.size());
+        }
         for (AssignedJob reloadJob : reloadJobs) {
             jobs.remove(reloadJob);
         }

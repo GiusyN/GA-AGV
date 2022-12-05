@@ -12,7 +12,7 @@ import edu.ga.master.ga.utils.Settings;
  */
 public class OverCapacityBatteryLevelException extends BatteryException{
 
-    public OverCapacityBatteryLevelException(int capacity) {
-        super("La batteria non può superare [tua capacity: "+capacity+"]  la capacità: "+Settings.getInstance().getBatteryCapacity());
+    public OverCapacityBatteryLevelException(int agv_id, int capacity) {
+        super("[AGV "+agv_id+"] La batteria non può superare [tua capacity: "+capacity+"]  la capacità: "+Settings.getInstance().getBatteryCapacity());
     }
 }

@@ -4,6 +4,8 @@
  */
 package edu.ga.master.ga.model;
 
+import edu.ga.master.ga.exceptions.GAInconsistencyException;
+
 /**
  *
  * @author sommovir
@@ -18,11 +20,17 @@ public class AssignedJob {
     public AssignedJob() {
     }
 
-    public AssignedJob(Job job, AGV agv, int startTime, int endTime) {
+    public AssignedJob(Job job, AGV agv, int startTime, int endTime) throws GAInconsistencyException {
         this.job = job;
         this.agv = agv;
         this.startTime = startTime;
         this.endTime = endTime;
+        if(job instanceof ReloadJob){
+            ReloadJob reloadJob = (ReloadJob) job;
+            if(reloadJob.getId() != agv.getId()){
+                throw new GAInconsistencyException("AGV ID and Reload Job ID are not the same");
+            }
+        }
     }
 
     public Job getJob() {
@@ -66,6 +74,10 @@ public class AssignedJob {
 
     //clone method
     public AssignedJob clone(){
-        return new AssignedJob(this.job, this.agv, this.startTime, this.endTime);
+        try {
+            return new AssignedJob(this.job, this.agv, this.startTime, this.endTime);
+        } catch (GAInconsistencyException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

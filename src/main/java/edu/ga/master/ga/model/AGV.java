@@ -26,12 +26,12 @@ public class AGV {
         setBatteryLevel(batteryLevel);
     }
     
-    public void work(int energyConsumed) throws BatteryException{
+    public synchronized void work(int energyConsumed) throws BatteryException{
         int newBatteryLevel = this.batteryLevel - energyConsumed;
         this.setBatteryLevel(newBatteryLevel);
     }
     
-    public void reload(int amountOfEnergy) throws BatteryException{
+    public synchronized void reload(int amountOfEnergy) throws BatteryException{
         int newBatteryLevel = this.batteryLevel + amountOfEnergy;
         this.setBatteryLevel(newBatteryLevel);
     }
@@ -44,17 +44,17 @@ public class AGV {
         this.id = id;
     }
 
-    public int getBatteryLevel() {
+    public synchronized int getBatteryLevel() {
         return batteryLevel;
     }
 
-    public final void setBatteryLevel(int batteryLevel) throws TooLowBatteryLevelException, OverCapacityBatteryLevelException {
+    public synchronized final void setBatteryLevel(int batteryLevel) throws TooLowBatteryLevelException, OverCapacityBatteryLevelException {
         if(batteryLevel<0){
-            System.out.println("AGV WITH ERROR: "+this.id);
+            System.out.println("AGV WITH ERROR: "+this.id+" BATTERY LEVEL: "+batteryLevel);
             throw new TooLowBatteryLevelException(batteryLevel);
         }else if(batteryLevel > Settings.getInstance().getBatteryCapacity()){
-            System.out.println("AGV WITH ERROR: "+this.id);
-            throw new OverCapacityBatteryLevelException(batteryLevel);
+            System.out.println("AGV WITH ERROR: "+this.id+" and current battery level: "+batteryLevel);
+            throw new OverCapacityBatteryLevelException(this.id,batteryLevel);
         }
         this.batteryLevel = batteryLevel;
     }
@@ -91,6 +91,7 @@ public class AGV {
 
 
     public void fill() {
+        System.out.println( " -------------------- MANUAL FILLING ---------------------");
         this.batteryLevel = Settings.getInstance().getBatteryCapacity();
     }
 }

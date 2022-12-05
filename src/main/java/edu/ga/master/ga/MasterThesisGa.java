@@ -27,10 +27,12 @@ public class MasterThesisGa {
 //        try {
             System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
             System.out.println("Ciao Luca come va tutt'appost ?");
-            Settings.getInstance().setVerbose(false);
+            Settings.getInstance().setElitism(1);
+            GAEngine.getInstance().setMaxCycle(5);
+            Settings.getInstance().setVerbose(true);
             Settings.getInstance().setBatteryCapacity(5);
             Settings.getInstance().setMaxTime(5);
-            Settings.getInstance().setPopulationSize(100);
+            Settings.getInstance().setPopulationSize(10);
             Settings.getInstance().setNumberOfJobs(6);
             JobManager.getInstance().init(new RealJobGenerator());
             JobManager.getInstance().generateJobs(6); //TODO FIX DUPLICATE SETTINGS ENTRY
