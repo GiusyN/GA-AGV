@@ -28,14 +28,14 @@ public class MasterThesisGa {
             System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
             System.out.println("Ciao Luca come va tutt'appost ?");
             Settings.getInstance().setElitism(10);
-            GAEngine.getInstance().setMaxCycle(100);
+            GAEngine.getInstance().setMaxCycle(200);
             Settings.getInstance().setVerbose(false);
             Settings.getInstance().setBatteryCapacity(10);
-            Settings.getInstance().setMaxTime(5);
+            Settings.getInstance().setMaxTime(50);
             Settings.getInstance().setPopulationSize(100);
-            Settings.getInstance().setNumberOfJobs(20);
+            Settings.getInstance().setNumberOfJobs(150);
             JobManager.getInstance().init(new RealJobGenerator());
-            JobManager.getInstance().generateJobs(6); //TODO FIX DUPLICATE SETTINGS ENTRY
+            JobManager.getInstance().generateJobs();
             try {
                 JobManager.getInstance().printJobs();
             } catch (NoGeneratedJobsException ex) {
@@ -58,12 +58,10 @@ public class MasterThesisGa {
                     .build();
 
             if(Settings.getInstance().getNumberOfJobs() <= 15){
-                population.print(true);
+                population.print(false);
             }else{
                 population.printWithManyJobs();
             }
-
-            GAEngine.getInstance().setNumberOfCycles(1);
             try {
                 System.out.printf("RUNNIGN ALGORITHM WITH %d CYCLES %n", GAEngine.getInstance().getNumberOfCycles());
 

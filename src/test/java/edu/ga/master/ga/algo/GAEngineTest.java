@@ -29,7 +29,7 @@ class GAEngineTest {
         Settings.getInstance().setBatteryCapacity(5);
         Settings.getInstance().setMaxTime(5);
         JobManager.getInstance().init(new FakeJobGenerator());
-        JobManager.getInstance().generateJobs(10);
+        Settings.getInstance().setNumberOfJobs(10);
     }
 
     //check if the child has duplicate jobs
@@ -576,6 +576,7 @@ class GAEngineTest {
     @Test
     public void testClearReloads(){
         try {
+            JobManager.getInstance().generateJobs();
             Individual individual = new Individual(2);
             individual.calculateReloads();
             assertTrue(individual.getReloadJobs().size() != 0);

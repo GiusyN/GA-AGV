@@ -39,11 +39,11 @@ public class JobManager {
     }
     
     
-    public void generateJobs(int n){
+    public void generateJobs(){
         if(this.jobGenerator == null){
             this.jobGenerator = new FakeJobGenerator();
         }
-        this.jobs = jobGenerator.generate(n);
+        this.jobs = jobGenerator.generate(Settings.getInstance().getNumberOfJobs());
     }
 
     public LinkedList<WorkJob> getJobs() {

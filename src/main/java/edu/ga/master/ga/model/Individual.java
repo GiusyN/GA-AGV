@@ -28,7 +28,7 @@ public class Individual implements Comparable<Individual> {
     private LinkedList<AssignedJob> jobs = new LinkedList<>();
     private boolean dirty_fitness = true;
     private boolean dirty_makespan = true;
-    private int makespan = -1;
+    private float makespan = -1f;
     private int numAGV;
     private Map<Integer, AGV> agvByIDMap = new HashMap<>();
     private Map<Integer, Integer> agvStartTimeMap = new HashMap<>();
@@ -113,9 +113,9 @@ public class Individual implements Comparable<Individual> {
         }
 
         //order jobs by time
-        workJobs.sort(Comparator.reverseOrder());
+       // workJobs.sort(Comparator.reverseOrder());
 
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             for (WorkJob workJob : workJobs) {
                 System.out.println(workJob);
             }
@@ -140,7 +140,7 @@ public class Individual implements Comparable<Individual> {
         }
 
         //stampa tutti i job assegnati
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             for (AssignedJob job : jobs) {
                 System.out.println(job);
             }
@@ -188,8 +188,8 @@ public class Individual implements Comparable<Individual> {
 //            agvByIDMap.put(job.getAgv().getId(), job.getAgv());
 //        }
 
-        for(int i = Settings.getInstance().getMinimumAGV(); i <= Settings.getInstance().getMaximumAGV(); i++) {
-            if(!agvByIDMap.containsKey(i)) {
+        for (int i = Settings.getInstance().getMinimumAGV(); i <= Settings.getInstance().getMaximumAGV(); i++) {
+            if (!agvByIDMap.containsKey(i)) {
                 AGV agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
                 agvByIDMap.put(i, agv);
             }
@@ -278,7 +278,7 @@ public class Individual implements Comparable<Individual> {
                         valutazioniRicariche.add(new ImmutablePair<>(reloadPossibility, numTask));
                     }
                     //stampa tutte le valutazioni ricariche:
-                    if(Settings.getInstance().isVerbose()) {
+                    if (Settings.getInstance().isVerbose()) {
                         for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
                             System.out.println("Ricarica: " + valutazioneRicarica.getLeft() + " - Task: " + valutazioneRicarica.getRight());
                         }
@@ -297,7 +297,7 @@ public class Individual implements Comparable<Individual> {
                     }
                     reloadJob = new ReloadJob(agv.getId(), bestReload.getLeft());
                     //stampa best reload
-                    if(Settings.getInstance().isVerbose()) {
+                    if (Settings.getInstance().isVerbose()) {
                         System.out.println("Best reload: " + bestReload.getLeft() + " - Task: " + bestReload.getRight());
                     }
                 }
@@ -317,7 +317,7 @@ public class Individual implements Comparable<Individual> {
             index++;
         }
 
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             System.out.println("********* RELOADS *********");
             //print all reloads
             for (Pair<AssignedJob, Integer> reload : reloads) {
@@ -335,12 +335,12 @@ public class Individual implements Comparable<Individual> {
         for (AGV agv : agvByIDMap.values()) {
             agv.fill();
         }
-        for(AssignedJob assignedJob : jobs) {
+        for (AssignedJob assignedJob : jobs) {
             assignedJob.getAgv().fill();
         }
 
         //print temporary solution with reloads
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             System.out.println("***************************************************");
             System.out.println("            TEMPORARY SOLUTION                 ");
             System.out.println("***************************************************");
@@ -360,19 +360,19 @@ public class Individual implements Comparable<Individual> {
             System.out.println("-------------------------------------------------");
         }
 
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             System.out.println(" SOLUTION WITH RELOADS AND CALCULATION OF BATTERY LEVELS");
             for (AssignedJob assignedJob : jobs) {
                 AGV agv = agvByIDMap.get(assignedJob.getAgv().getId());
                 int penalty = 0;
                 if (assignedJob.getJob() instanceof ReloadJob) {
                     penalty = 1;
-                    System.out.println(" -- agv n. "+agv.getId());
-                    System.out.println( "-- reloading with " + ((ReloadJob) assignedJob.getJob()).getEnergy() + " energy, the avg battery level is now " + agv.getBatteryLevel());
+                    System.out.println(" -- agv n. " + agv.getId());
+                    System.out.println("-- reloading with " + ((ReloadJob) assignedJob.getJob()).getEnergy() + " energy, the avg battery level is now " + agv.getBatteryLevel());
                     agv.reload(assignedJob.getJob().getEnergy());
                 } else {
-                    System.out.println(" -- agv n. "+agv.getId());
-                    System.out.println( "-- working with " + ((WorkJob) assignedJob.getJob()).getEnergy() + " energy, the avg battery level is now " + agv.getBatteryLevel());
+                    System.out.println(" -- agv n. " + agv.getId());
+                    System.out.println("-- working with " + ((WorkJob) assignedJob.getJob()).getEnergy() + " energy, the avg battery level is now " + agv.getBatteryLevel());
                     agv.work(assignedJob.getJob().getEnergy());
                 }
                 int startTime = agvStartTimeMap.get(agv.getId());
@@ -388,7 +388,7 @@ public class Individual implements Comparable<Individual> {
         }
 
         //stampa tutti i valori nella agv map
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             for (AGV agv : agvByIDMap.values()) {
                 System.out.println("AGV " + agv.getId() + " - BATTERY: " + agv.getBatteryLevel() + (agv.getBatteryLevel() == Settings.getInstance().getBatteryCapacity() ? " (FULL)" : ""));
             }
@@ -422,7 +422,7 @@ public class Individual implements Comparable<Individual> {
 //                this.makespan = endTime;
 //            }
 //            agvStartTimeMap.put(agv.getId(), endTime);
-            if(Settings.getInstance().isVerbose()) {
+            if (Settings.getInstance().isVerbose()) {
                 System.out.println(assignedJob);
             }
         }
@@ -446,10 +446,8 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
-    public int getMakespan() {
-        if (dirty_makespan) {
-            calculateMakespan();
-        }
+    public float getMakespan() {
+        calculateMakespan();
         return this.makespan;
     }
 
@@ -459,9 +457,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public float getFitness() {
-        if (dirty_fitness) {
-            calculateFitness();
-        }
+        calculateFitness();
         return this.fitness;
     }
 
@@ -512,7 +508,7 @@ public class Individual implements Comparable<Individual> {
     public void clearReloads() {
         List<AssignedJob> reloadJobs = getReloadJobs();
         //sprint ize of reloads
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             System.out.println("SIZE OF RELOAD JOBS: " + reloadJobs.size());
         }
         for (AssignedJob reloadJob : reloadJobs) {

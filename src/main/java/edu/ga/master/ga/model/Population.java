@@ -72,6 +72,10 @@ public class Population {
 
     }
 
+    public void setIndividuals(Individual[] toArray) {
+        this.individuals = toArray;
+    }
+
     public enum DISTRIBUTION {
         EQUAL, RANDOM
     };
@@ -80,7 +84,7 @@ public class Population {
     public void printWithManyJobs() {
         printSettings();
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-        System.out.printf("%12s | %8s | %10s |", "INDIVIDUAL", "N. AGV", "FITNESS");
+        System.out.printf("%12s | %8s | %10s | %10s |", "INDIVIDUAL", "N. AGV", "MAKESPAN", "FITNESS");
         System.out.println();
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
         int size = Settings.getInstance().getPopulationSize();
@@ -88,7 +92,8 @@ public class Population {
 
             //format fitness in 2 decimali
             String fitness = String.format("%.2f", individuals[i].getFitness());
-            System.out.printf("%12s | %8s | %10s |" , ""+i, individuals[i].getNumAGV(),""+fitness);
+            String makespan = String.format("%.2f", individuals[i].getMakespan());
+            System.out.printf("%12s | %8s | %10s | %10s |" , ""+i, individuals[i].getNumAGV(),""+makespan, ""+fitness);
             System.out.println();
 //            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
@@ -118,7 +123,7 @@ public class Population {
 
         printSettings();
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-        System.out.printf("%12s | %90s | %90s | %8s | %10s |", "INDIVIDUAL","JOB & RELOADS ASSIGNEMENTS", "AGV ASSIGNEMENT", "N. AGV", "FITNESS");
+        System.out.printf("%12s | %90s | %90s | %8s | %10s | %10s |", "INDIVIDUAL","JOB & RELOADS ASSIGNEMENTS", "AGV ASSIGNEMENT", "N. AGV","MAKESPAN", "FITNESS");
         System.out.println();
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
         int size = Settings.getInstance().getPopulationSize();
@@ -129,7 +134,8 @@ public class Population {
             String agvAssignement = stringStringPair.getRight();
             //format fitness in 2 decimali
             String fitness = String.format("%.2f", individuals[i].getFitness());
-            System.out.printf("%12s | %90s | %90s | %8s | %10s |" , ""+i,jobAssignement, agvAssignement, individuals[i].getNumAGV(),""+fitness);
+            String makespan = String.format("%.2f", individuals[i].getMakespan());
+            System.out.printf("%12s | %90s | %90s | %8s | %10s| %10s |" , ""+i,jobAssignement, agvAssignement, individuals[i].getNumAGV(),""+makespan,""+fitness);
             System.out.println();
 //            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,9 @@ public class GAEngine {
 
     public enum SELECTION {
         TOURNAMENT, RANDOM
-    };
+    }
+
+    ;
 
     private SELECTION selectionStrategy = SELECTION.RANDOM;
 
@@ -52,18 +55,29 @@ public class GAEngine {
         //init population
 
 
-
         //cicle until max cycle
         int cycle = 0;
+        JOptionPane.showMessageDialog(null, "CICLI: " + numberOfCycles);
         while (cycle < numberOfCycles) {
 
             System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
             System.out.println("                     C Y C L E  " + cycle + "                     ");
             System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            float best_fitness = population.getIndividuals()[0].getFitness();
+            float worst_fitness = population.getIndividuals()[population.getIndividuals().length - 1].getFitness();
+            float average_fitness = 0;
+            for (Individual individual : population.getIndividuals()) {
+                average_fitness += individual.getFitness();
+            }
+            average_fitness /= population.getIndividuals().length;
+            System.out.println("BEST FITNESS: " + best_fitness);
+            System.out.println("WORST FITNESS: " + worst_fitness);
+            System.out.println("AVERAGE FITNESS: " + average_fitness);
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
 
-            List<Pair<Individual,Individual>> crossoverCandidates = new ArrayList<>();
-            int howManyCrossoverCandidates = (int) (Settings.getInstance().getPopulationSize()  * Settings.getInstance().getCrossoverProbability());
+            List<Pair<Individual, Individual>> crossoverCandidates = new ArrayList<>();
+            int howManyCrossoverCandidates = (int) (Settings.getInstance().getPopulationSize() * Settings.getInstance().getCrossoverProbability());
 
             for (int i = 0; i < howManyCrossoverCandidates; i++) {
                 Pair<Individual, Individual> parents = population.selectParents();
@@ -74,6 +88,21 @@ public class GAEngine {
                 Pair<Individual, Individual> childrenPair = crossover(parents.getLeft(), parents.getRight());
                 children.add(childrenPair.getLeft());
                 children.add(childrenPair.getRight());
+                if (childrenPair.getLeft().getFitness() < worst_fitness) {
+//                    JOptionPane.showMessageDialog(null, "WORST FITNESS: " + worst_fitness + " CHILD FITNESS: " + childrenPair.getLeft().getFitness(),"NEW CHILD IN POPULATION", JOptionPane.INFORMATION_MESSAGE);
+                }
+                if (childrenPair.getLeft().getFitness() < best_fitness) {
+                    JOptionPane.showMessageDialog(null, "BEST FITNESS: " + best_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(), "NEW CHILD IN POPULATION", JOptionPane.WARNING_MESSAGE);
+
+                }
+                if (childrenPair.getRight().getFitness() < worst_fitness) {
+//                    JOptionPane.showMessageDialog(null, "WORST FITNESS: " + worst_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(),"NEW CHILD IN POPULATION", JOptionPane.INFORMATION_MESSAGE);
+                }
+                if (childrenPair.getRight().getFitness() < best_fitness) {
+                    JOptionPane.showMessageDialog(null, "BEST FITNESS: " + best_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(), "NEW CHILD IN POPULATION", JOptionPane.WARNING_MESSAGE);
+
+                }
+
             }
 
             //mutation
@@ -103,9 +132,9 @@ public class GAEngine {
             //sort all individuals by fitness
             allIndividuals.sort((o1, o2) -> {
                 if (o1.getFitness() > o2.getFitness()) {
-                    return -1;
-                } else if (o1.getFitness() < o2.getFitness()) {
                     return 1;
+                } else if (o1.getFitness() < o2.getFitness()) {
+                    return -1;
                 } else {
                     return 0;
                 }
@@ -118,22 +147,22 @@ public class GAEngine {
             }
 
 
-
             //increment cycle
             cycle++;
 
             //extract best individual
             Individual bestIndividual = allIndividuals.get(0);
+
+            //set new population
+            population.setIndividuals(allIndividuals.toArray(new Individual[allIndividuals.size()]));
+
+
             //print iteration
             System.out.println("Iteration: " + cycle + " Best fitness: " + bestIndividual.getFitness());
             //print best individual
             System.out.println("Best individual: " + bestIndividual);
             System.out.println("-------------------------------------------------------------------------------------");
         }
-
-
-
-
 
 
     }
@@ -165,7 +194,7 @@ public class GAEngine {
 
     //controlla che una lista di AssignedJob non contenga duplicati
     public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2, int start, int end) {
-        System.out.println("start: " + start + " end: " + end);
+//        System.out.println("start: " + start + " end: " + end);
 
         do {
             for (int i = start; i < end; i++) {
@@ -196,7 +225,7 @@ public class GAEngine {
 //            }
 //        }
 
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             //CHILD 1
             System.out.println("---------------------- child1 ----------------------");
             for (AssignedJob job : child1) {
@@ -217,10 +246,9 @@ public class GAEngine {
     public Pair<Individual, Individual> crossover(@NotNull Individual dad, @NotNull Individual mum) {
 
 
-
         //TEST
         //print dad
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
 
             System.out.println(" BEFORE CROSSOVER DELLA MINCHIA");
             System.out.println("----------------- DAD -------------");
@@ -248,13 +276,8 @@ public class GAEngine {
         }
 
 
-
-
         dad.clearReloads();
         mum.clearReloads();
-
-
-
 
 
         List<AssignedJob> dadWorkJobs = dad.getWorkJobs();
@@ -293,7 +316,7 @@ public class GAEngine {
             }
         }
 
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             //print child1
             System.out.println("---------------------- child1 AFTER SWAP ----------------------");
             for (AssignedJob job : child1AssignedJobs) {
@@ -307,18 +330,6 @@ public class GAEngine {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         fixDuplicate(child1AssignedJobs, child2AssignedJobs, startCrossPoint, endCrossPoint);
         fixDuplicate(child2AssignedJobs, child1AssignedJobs, startCrossPoint, endCrossPoint);
 
@@ -329,33 +340,31 @@ public class GAEngine {
             kid2 = Individual.generate(child2AssignedJobs);
 
 
+            if (Settings.getInstance().isVerbose()) {
+                //TEST 2
+                System.out.println(" AFTER CROSSOVER DELLA MINCHIA");
+                System.out.println("----------------- kid1 -------------");
+                System.out.println("kid1: ");
+                Pair<String, String> printDadStringedJobs2 = kid1.printJobs(true);
+                String s_dad_jobAssignement2 = printDadStringedJobs2.getLeft();
+                String s_dad_agvAssignement2 = printDadStringedJobs2.getRight();
+                //format fitness in 2 decimali
+                String dad_fitness2 = String.format("%.2f", kid1.getFitness());
+                System.out.printf("%12s | %90s | %90s | %8s | %10s |", "XY", s_dad_jobAssignement2, s_dad_agvAssignement2, kid1.getNumAGV(), "" + dad_fitness2);
+                System.out.println("-----------------------------------");
+                //print mum
+                System.out.println("----------------- kid2 -------------");
+                System.out.println("kid2: ");
+                dad.printJobs(true);
+                Pair<String, String> printMumStringedJobs2 = kid2.printJobs(true);
+                String s_mum_jobAssignement2 = printMumStringedJobs2.getLeft();
+                String s_mum_agvAssignement2 = printMumStringedJobs2.getRight();
+                //format fitness in 2 decimali
+                String mum_fitness2 = String.format("%.2f", kid2.getFitness());
+                System.out.printf("%12s | %90s | %90s | %8s | %10s |", "XX", s_mum_jobAssignement2, s_mum_agvAssignement2, kid2.getNumAGV(), "" + mum_fitness2);
+                System.out.println("-----------------------------------");
 
-            //TEST 2
-            System.out.println(" AFTER CROSSOVER DELLA MINCHIA");
-            System.out.println("----------------- kid1 -------------");
-            System.out.println("kid1: ");
-            Pair<String, String> printDadStringedJobs2 = kid1.printJobs(true);
-            String s_dad_jobAssignement2 = printDadStringedJobs2.getLeft();
-            String s_dad_agvAssignement2 = printDadStringedJobs2.getRight();
-            //format fitness in 2 decimali
-            String dad_fitness2 = String.format("%.2f", kid1.getFitness());
-            System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XY",s_dad_jobAssignement2, s_dad_agvAssignement2, kid1.getNumAGV(),""+dad_fitness2);
-            System.out.println("-----------------------------------");
-            //print mum
-            System.out.println("----------------- kid2 -------------");
-            System.out.println("kid2: ");
-            dad.printJobs(true);
-            Pair<String, String> printMumStringedJobs2 = kid2.printJobs(true);
-            String s_mum_jobAssignement2 = printMumStringedJobs2.getLeft();
-            String s_mum_agvAssignement2 = printMumStringedJobs2.getRight();
-            //format fitness in 2 decimali
-            String mum_fitness2 = String.format("%.2f", kid2.getFitness());
-            System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XX",s_mum_jobAssignement2, s_mum_agvAssignement2, kid2.getNumAGV(),""+mum_fitness2);
-            System.out.println("-----------------------------------");
-
-
-
-
+            }
 
 
             //------------------------------------------------------------------------------------------
@@ -363,7 +372,7 @@ public class GAEngine {
             int swapPoint = child1AssignedJobs.size() / 2;
 
             //swap the first half of assigned agv from the kid1 to the kid2
-            System.out.println("swapPoint: " + swapPoint);
+//            System.out.println("swapPoint: " + swapPoint);
 
             for (int i = 0; i < swapPoint; i++) {
                 kid1.getAssignedJobs().get(i).setAgv(agvsDad.get(i));
@@ -391,7 +400,7 @@ public class GAEngine {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(Settings.getInstance().isVerbose()) {
+        if (Settings.getInstance().isVerbose()) {
             System.out.println("************************** END CROSSOVER **************************");
         }
         return new ImmutablePair<>(kid1, kid2);
