@@ -197,11 +197,13 @@ public class Population {
 
         public Builder minimumAGV(int minimumAGV) {
             this.minimumAGV = minimumAGV;
+            Settings.getInstance().setMinimumAGV(minimumAGV);
             return this;
         }
 
         public Builder maximumAGV(int maximumAGV) {
             this.maximumAGV = maximumAGV;
+            Settings.getInstance().setMaximumAGV(maximumAGV);
             return this;
         }
 

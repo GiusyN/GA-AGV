@@ -25,8 +25,10 @@ public class Settings {
     private float  mutationProbability = 0.2f; //20%
     private int elitism = 10; //numero di individui da mantenere nella popolazione
     private boolean verbose = true;
+    private int minimumAGV = 1;
+    private int maximumAGV = 2;
 
-    
+
     public static Settings getInstance() {
         if (_instance == null) {
             _instance = new Settings();
@@ -115,5 +117,20 @@ public class Settings {
 
     public boolean isVerbose() {
         return verbose;
+    }
+
+    public void setMinimumAGV(int minimumAGV) {
+        this.minimumAGV = minimumAGV;
+    }
+
+    public int getMinimumAGV() {
+        return this.minimumAGV;
+    }
+
+    public void setMaximumAGV(int maximunAGV) {
+        this.maximumAGV = maximunAGV;
+    }
+    public int getMaximumAGV() {
+        return this.maximumAGV;
     }
 }

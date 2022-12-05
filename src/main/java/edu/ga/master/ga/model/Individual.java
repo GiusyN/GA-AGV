@@ -180,6 +180,24 @@ public class Individual implements Comparable<Individual> {
         }
 
 
+        //clear agvByIDMAp
+        agvByIDMap.clear();
+
+        //setup the agv id map
+        for (AssignedJob job : jobs) {
+            agvByIDMap.put(job.getAgv().getId(), job.getAgv());
+        }
+
+        for(int i = Settings.getInstance().getMinimumAGV(); i <= Settings.getInstance().getMaximumAGV(); i++) {
+            if(!agvByIDMap.containsKey(i)) {
+                AGV agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
+                agvByIDMap.put(i, agv);
+            }
+        }
+
+        //
+
+
         //fill all avg to max battery capacity
         for (AGV agv : agvByIDMap.values()) {
             agv.fill();
@@ -200,7 +218,8 @@ public class Individual implements Comparable<Individual> {
 
         while (iterator.hasNext()) {
             AssignedJob assignedJob = iterator.next();
-            AGV agv = assignedJob.getAgv();
+            //AGV agv = assignedJob.getAgv();
+            AGV agv = agvByIDMap.get(assignedJob.getAgv().getId());
             int energy = assignedJob.getJob().getEnergy();
             if (Settings.getInstance().isVerbose()) {
                 System.out.println("the next job costs: " + energy + " and the agv n." + agv.getId() + " has: " + agv.getBatteryLevel());
