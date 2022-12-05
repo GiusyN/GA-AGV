@@ -12,7 +12,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-//singleton
+
+/**
+ * @author sommovir
+ * @version 1.0
+ * <img src="https://www.java-injection.it/wp-content/uploads/2022/06/jlogo_gra-1024x195.png" alt="Genetic Algorithm">
+ */
 public class GAEngine {
 
     private static GAEngine instance;
@@ -215,30 +220,32 @@ public class GAEngine {
 
         //TEST
         //print dad
-        System.out.println(" BEFORE CROSSOVER DELLA MINCHIA");
-        System.out.println("----------------- DAD -------------");
-        System.out.println("dad: ");
-        Pair<String, String> printDadStringedJobs = dad.printJobs(true);
-        String s_dad_jobAssignement = printDadStringedJobs.getLeft();
-        String s_dad_agvAssignement = printDadStringedJobs.getRight();
-        //format fitness in 2 decimali
-        String dad_fitness = String.format("%.2f", dad.getFitness());
-        System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XY",s_dad_jobAssignement, s_dad_agvAssignement, dad.getNumAGV(),""+dad_fitness);
-        System.out.println("dad fitness: " + dad.getFitness());
-        System.out.println("-----------------------------------");
-        //print mum
-        System.out.println("----------------- MUM -------------");
-        System.out.println("mum: ");
-        dad.printJobs(true);
-        Pair<String, String> printMumStringedJobs = mum.printJobs(true);
-        String s_mum_jobAssignement = printMumStringedJobs.getLeft();
-        String s_mum_agvAssignement = printMumStringedJobs.getRight();
-        //format fitness in 2 decimali
-        String mum_fitness = String.format("%.2f", mum.getFitness());
-        System.out.printf("%12s | %90s | %90s | %8s | %10s |" , "XX",s_mum_jobAssignement, s_mum_agvAssignement, mum.getNumAGV(),""+mum_fitness);
-        System.out.println("mum fitness: " + mum.getFitness());
-        System.out.println("-----------------------------------");
+        if(Settings.getInstance().isVerbose()) {
 
+            System.out.println(" BEFORE CROSSOVER DELLA MINCHIA");
+            System.out.println("----------------- DAD -------------");
+            System.out.println("dad: ");
+            Pair<String, String> printDadStringedJobs = dad.printJobs(true);
+            String s_dad_jobAssignement = printDadStringedJobs.getLeft();
+            String s_dad_agvAssignement = printDadStringedJobs.getRight();
+            //format fitness in 2 decimali
+            String dad_fitness = String.format("%.2f", dad.getFitness());
+            System.out.printf("%12s | %90s | %90s | %8s | %10s |", "XY", s_dad_jobAssignement, s_dad_agvAssignement, dad.getNumAGV(), "" + dad_fitness);
+            System.out.println("dad fitness: " + dad.getFitness());
+            System.out.println("-----------------------------------");
+            //print mum
+            System.out.println("----------------- MUM -------------");
+            System.out.println("mum: ");
+            dad.printJobs(true);
+            Pair<String, String> printMumStringedJobs = mum.printJobs(true);
+            String s_mum_jobAssignement = printMumStringedJobs.getLeft();
+            String s_mum_agvAssignement = printMumStringedJobs.getRight();
+            //format fitness in 2 decimali
+            String mum_fitness = String.format("%.2f", mum.getFitness());
+            System.out.printf("%12s | %90s | %90s | %8s | %10s |", "XX", s_mum_jobAssignement, s_mum_agvAssignement, mum.getNumAGV(), "" + mum_fitness);
+            System.out.println("mum fitness: " + mum.getFitness());
+            System.out.println("-----------------------------------");
+        }
 
 
 

@@ -27,13 +27,13 @@ public class MasterThesisGa {
 //        try {
             System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
             System.out.println("Ciao Luca come va tutt'appost ?");
-            Settings.getInstance().setElitism(1);
-            GAEngine.getInstance().setMaxCycle(5);
-            Settings.getInstance().setVerbose(true);
-            Settings.getInstance().setBatteryCapacity(5);
+            Settings.getInstance().setElitism(10);
+            GAEngine.getInstance().setMaxCycle(100);
+            Settings.getInstance().setVerbose(false);
+            Settings.getInstance().setBatteryCapacity(10);
             Settings.getInstance().setMaxTime(5);
-            Settings.getInstance().setPopulationSize(10);
-            Settings.getInstance().setNumberOfJobs(6);
+            Settings.getInstance().setPopulationSize(100);
+            Settings.getInstance().setNumberOfJobs(20);
             JobManager.getInstance().init(new RealJobGenerator());
             JobManager.getInstance().generateJobs(6); //TODO FIX DUPLICATE SETTINGS ENTRY
             try {
@@ -54,7 +54,7 @@ public class MasterThesisGa {
             Population population = new Population.Builder() //il size è settato in settings
                     .distribution(Population.DISTRIBUTION.EQUAL)
                     .minimumAGV(2)
-                    .maximumAGV(3)
+                    .maximumAGV(6)
                     .build();
 
             if(Settings.getInstance().getNumberOfJobs() <= 15){

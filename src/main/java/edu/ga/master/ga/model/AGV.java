@@ -91,7 +91,6 @@ public class AGV {
 
 
     public void fill() {
-        System.out.println( " -------------------- MANUAL FILLING ---------------------");
         this.batteryLevel = Settings.getInstance().getBatteryCapacity();
     }
 }

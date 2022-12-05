@@ -184,9 +184,9 @@ public class Individual implements Comparable<Individual> {
         agvByIDMap.clear();
 
         //setup the agv id map
-        for (AssignedJob job : jobs) {
-            agvByIDMap.put(job.getAgv().getId(), job.getAgv());
-        }
+//        for (AssignedJob job : jobs) {
+//            agvByIDMap.put(job.getAgv().getId(), job.getAgv());
+//        }
 
         for(int i = Settings.getInstance().getMinimumAGV(); i <= Settings.getInstance().getMaximumAGV(); i++) {
             if(!agvByIDMap.containsKey(i)) {
@@ -204,6 +204,9 @@ public class Individual implements Comparable<Individual> {
         }
         //fill all agv of jobs
         for (AssignedJob job : jobs) {
+            if (job.getAgv() == null) {
+                continue;
+            }
             job.getAgv().fill();
         }
 
@@ -219,7 +222,12 @@ public class Individual implements Comparable<Individual> {
         while (iterator.hasNext()) {
             AssignedJob assignedJob = iterator.next();
             //AGV agv = assignedJob.getAgv();
+            //if agv is not in the map, add it
+            if (!agvByIDMap.containsKey(assignedJob.getAgv().getId())) {
+                agvByIDMap.put(assignedJob.getAgv().getId(), new AGV(assignedJob.getAgv().getId(), Settings.getInstance().getBatteryCapacity()));
+            }
             AGV agv = agvByIDMap.get(assignedJob.getAgv().getId());
+
             int energy = assignedJob.getJob().getEnergy();
             if (Settings.getInstance().isVerbose()) {
                 System.out.println("the next job costs: " + energy + " and the agv n." + agv.getId() + " has: " + agv.getBatteryLevel());
@@ -385,7 +393,7 @@ public class Individual implements Comparable<Individual> {
                 System.out.println("AGV " + agv.getId() + " - BATTERY: " + agv.getBatteryLevel() + (agv.getBatteryLevel() == Settings.getInstance().getBatteryCapacity() ? " (FULL)" : ""));
             }
         }
-        System.out.println("--------------------- FINE CHECK MAPPE ----------------------------");
+
 
         for (AssignedJob assignedJob : jobs) {
 //            AGV agv = assignedJob.getAgv();
@@ -533,7 +541,7 @@ public class Individual implements Comparable<Individual> {
         int randomJobIndex = ThreadLocalRandom.current().nextInt(0, jobs.size());
         AssignedJob randomJob = jobs.get(randomJobIndex);
         if (randomJob.getJob() instanceof WorkJob) {
-            int randomAGVIndex = ThreadLocalRandom.current().nextInt(0, agvByIDMap.size());
+            int randomAGVIndex = ThreadLocalRandom.current().nextInt(Settings.getInstance().getMinimumAGV(), Settings.getInstance().getMaximumAGV());
             AGV randomAGV = agvByIDMap.get(randomAGVIndex);
             randomJob.setAgv(randomAGV);
         }
