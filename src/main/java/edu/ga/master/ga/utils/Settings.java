@@ -28,6 +28,8 @@ public class Settings {
     private int minimumAGV = 1;
     private int maximumAGV = 2;
 
+    private float kalergi = 0.1f;
+
 
     public static Settings getInstance() {
         if (_instance == null) {
@@ -38,6 +40,14 @@ public class Settings {
     
     private Settings() {
         super();
+    }
+
+    public float getKalergi() {
+        return kalergi;
+    }
+
+    public void setKalergi(float kalergi) {
+        this.kalergi = kalergi;
     }
 
     public void setReloadPenalty(int reloadPenalty) {

@@ -30,6 +30,7 @@ public class Individual implements Comparable<Individual> {
     private boolean dirty_makespan = true;
     private float makespan = -1f;
     private int numAGV;
+    private boolean kalergi;
     private Map<Integer, AGV> agvByIDMap = new HashMap<>();
     private Map<Integer, Integer> agvStartTimeMap = new HashMap<>();
     //    1      0
@@ -44,6 +45,14 @@ public class Individual implements Comparable<Individual> {
 
     public void setElite(boolean elite) {
         this.elite = elite;
+    }
+
+    public boolean isKalergi() {
+        return kalergi;
+    }
+
+    public void setKalergi(boolean kalergi) {
+        this.kalergi = kalergi;
     }
 
     public static Individual generate(List<AssignedJob> assignedJobs) throws BatteryException, GAInconsistencyException {

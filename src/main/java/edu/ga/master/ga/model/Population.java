@@ -93,7 +93,8 @@ public class Population {
             //format fitness in 2 decimali
             String fitness = String.format("%.2f", individuals[i].getFitness());
             String makespan = String.format("%.2f", individuals[i].getMakespan());
-            System.out.printf("%12s | %8s | %10s | %10s |" , ""+i, individuals[i].getNumAGV(),""+makespan, ""+fitness);
+            String kalergi = individuals[i].isKalergi() ? "N" : "";
+            System.out.printf("%12s | %8s | %10s | %10s | %8s |" , ""+i, individuals[i].getNumAGV(),""+makespan, ""+fitness,kalergi);
             System.out.println();
 //            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
