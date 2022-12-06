@@ -21,7 +21,7 @@ public class Settings {
     private int populationSize = 100;
     private int numberOfJobs = 6;
 
-    private float crossoverProbability = 0.2f; //percentuale di crossover da applicare alla popolazione
+    private float crossoverProbability = 0.3f; //percentuale di crossover da applicare alla popolazione
     private float  mutationProbability = 0.2f; //20%
     private int elitism = 10; //numero di individui da mantenere nella popolazione
     private boolean verbose = true;
@@ -37,6 +37,7 @@ public class Settings {
         }
         return _instance;
     }
+
     
     private Settings() {
         super();

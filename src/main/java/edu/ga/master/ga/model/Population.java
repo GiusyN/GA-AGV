@@ -13,6 +13,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -25,6 +27,8 @@ public class Population {
     private int minimumAGV;
     private int maximumAGV;
     public static DISTRIBUTION distribution;
+
+    private float theta = -1f;
 
 
     public Pair<Individual, Individual> selectParents() throws GAInconsistencyException {
@@ -160,9 +164,44 @@ public class Population {
         }
         //sort individuals by fitness
         sort();
+        calculateTheta();
+        System.out.println("***************************************************************************************");
+        System.out.println("Theta: "+theta);
+        System.out.println("***************************************************************************************");
+    }
 
+    private void calculateTheta() {
 
+        //get the individual in the middle of the population
+        int middleIndex = individuals.length/2;
+        Individual middleIndividual = individuals[middleIndex];
 
+        //somma di tutti i tempi dei job dell'individuo di mezzo
+        double sumTimes = 0;
+        for (AssignedJob job : middleIndividual.getWorkJobs()) {
+            sumTimes += job.getJob().getTime();
+        }
+
+        //somma di tutte le energie dei job dell'individuo di mezzo
+        double sumEnergies = 0;
+        for (AssignedJob job : middleIndividual.getWorkJobs()) {
+            sumEnergies += job.getJob().getEnergy();
+        }
+        float averageEnergyConsumption = Settings.getInstance().getBatteryCapacity()/2;
+        float numero_ricariche = (float) (sumEnergies/averageEnergyConsumption);
+        float lowerBound = (float) ((sumTimes + numero_ricariche*averageEnergyConsumption)/Settings.getInstance().getMaximumAGV());
+
+        float upperBound = (float) ((sumTimes + numero_ricariche*Settings.getInstance().getBatteryCapacity()) /2);
+
+        theta = (upperBound - lowerBound)/(Settings.getInstance().getMaximumAGV() - Settings.getInstance().getMinimumAGV());
+
+    }
+
+    public float getTheta() {
+        if(theta == -1){
+            throw new RuntimeException("Theta not calculated");
+        }
+        return theta;
     }
 
     private void sort() {
