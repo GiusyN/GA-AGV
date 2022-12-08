@@ -15,6 +15,8 @@ import edu.ga.master.ga.model.Population;
 import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import org.fusesource.jansi.AnsiConsole;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import edu.ga.master.ga.gui.ProcessViewerFrame;
 
 /**
  *
@@ -22,8 +24,47 @@ import org.fusesource.jansi.AnsiConsole;
  */
 public class MasterThesisGa {
 
+    
+    private static void launchGUI(){
+         try {
+
+            FlatIntelliJLaf.installLafInfo();
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                System.out.println("---- lf -> " + info.getName());
+                if ("FlatLaf IntelliJ".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(ProcessViewerFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(ProcessViewerFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(ProcessViewerFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(ProcessViewerFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ProcessViewerFrame().setVisible(true);
+            }
+        });
+    }
+    
     public static void main(String[] args) throws BatteryException {
         AnsiConsole.systemInstall();
+        FlatIntelliJLaf.installLafInfo();
+        launchGUI();
+        
+        
 //        try {
             System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
             System.out.println("Ciao Luca come va tutt'appost ?");
