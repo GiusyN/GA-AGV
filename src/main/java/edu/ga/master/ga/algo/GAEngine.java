@@ -2,6 +2,7 @@ package edu.ga.master.ga.algo;
 
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.exceptions.GAInconsistencyException;
+import edu.ga.master.ga.gui.events.EventManager;
 import edu.ga.master.ga.model.*;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.Utils;
@@ -55,33 +56,49 @@ public class GAEngine {
     public void run(Population population) throws BatteryException, GAInconsistencyException {
         //init population
 
+        
 
         float best_fitness = population.getIndividuals()[0].getFitness();
+        EventManager.getInstance().startsSimulation(best_fitness);
+        EventManager.getInstance().newImprovement(population.getIndividuals()[0], best_fitness);
 
         //cicle until max cycle
         int cycle = 0;
-        JOptionPane.showMessageDialog(null, "CICLI: " + numberOfCycles);
+        if(Settings.getInstance().isViewResults()){
+            JOptionPane.showMessageDialog(null, "CICLI: " + numberOfCycles);
+        }
         while (cycle < numberOfCycles) {
-
-            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-            System.out.println("                     C Y C L E  " + cycle + "                     ");
-            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-            if(population.getIndividuals()[0].getFitness() < best_fitness)  {
-
-                JOptionPane.showMessageDialog(null, "NEW IMPROVEMENT OF FITNESS: " + population.getIndividuals()[0].getFitness(),"EUREKA", JOptionPane.WARNING_MESSAGE);
+            if(Settings.getInstance().isViewResults()) {
+                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                System.out.println("                     C Y C L E  " + cycle + "                     ");
+                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
             }
-            best_fitness = population.getIndividuals()[0].getFitness();
+            
+//            best_fitness = population.getIndividuals()[0].getFitness();
+            Individual bestone = population.getIndividuals()[0];
+            if(population.getIndividuals()[0].getFitness() < best_fitness)  {
+                best_fitness = population.getIndividuals()[0].getFitness();
+
+                EventManager.getInstance().newImprovement(bestone, best_fitness);
+               // JOptionPane.showMessageDialog(null, "NEW IMPROVEMENT OF FITNESS: " + population.getIndividuals()[0].getFitness(),"EUREKA", JOptionPane.WARNING_MESSAGE);
+            }
+            
             float worst_fitness = population.getIndividuals()[population.getIndividuals().length - 1].getFitness();
             float average_fitness = 0;
             for (Individual individual : population.getIndividuals()) {
                 average_fitness += individual.getFitness();
             }
             average_fitness /= population.getIndividuals().length;
-            System.out.println("BEST FITNESS: " + best_fitness);
-            System.out.println("WORST FITNESS: " + worst_fitness);
-            System.out.println("AVERAGE FITNESS: " + average_fitness);
-            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            if(Settings.getInstance().isViewResults()) {
+                System.out.println("BEST FITNESS: " + best_fitness);
+                System.out.println("WORST FITNESS: " + worst_fitness);
+                System.out.println("AVERAGE FITNESS: " + average_fitness);
+                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            }
 
+            EventManager.getInstance().newAVG(average_fitness);
+            EventManager.getInstance().nextCycle(cycle);
+            
 
             List<Pair<Individual, Individual>> crossoverCandidates = new ArrayList<>();
             int howManyCrossoverCandidates = (int) (Settings.getInstance().getPopulationSize() * Settings.getInstance().getCrossoverProbability());
@@ -101,14 +118,14 @@ public class GAEngine {
 //                    JOptionPane.showMessageDialog(null, "WORST FITNESS: " + worst_fitness + " CHILD FITNESS: " + childrenPair.getLeft().getFitness(),"NEW CHILD IN POPULATION", JOptionPane.INFORMATION_MESSAGE);
                 }
                 if (childrenPair.getLeft().getFitness() < best_fitness) {
-                    JOptionPane.showMessageDialog(null, "BEST FITNESS: " + best_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(), "NEW CHILD IN POPULATION", JOptionPane.WARNING_MESSAGE);
+//                    JOptionPane.showMessageDialog(null, "BEST FITNESS: " + best_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(), "NEW CHILD IN POPULATION", JOptionPane.WARNING_MESSAGE);
 
                 }
                 if (childrenPair.getRight().getFitness() < worst_fitness) {
 //                    JOptionPane.showMessageDialog(null, "WORST FITNESS: " + worst_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(),"NEW CHILD IN POPULATION", JOptionPane.INFORMATION_MESSAGE);
                 }
                 if (childrenPair.getRight().getFitness() < best_fitness) {
-                    JOptionPane.showMessageDialog(null, "BEST FITNESS: " + best_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(), "NEW CHILD IN POPULATION", JOptionPane.WARNING_MESSAGE);
+//                    JOptionPane.showMessageDialog(null, "BEST FITNESS: " + best_fitness + " CHILD FITNESS: " + childrenPair.getRight().getFitness(), "NEW CHILD IN POPULATION", JOptionPane.WARNING_MESSAGE);
 
                 }
 
@@ -161,8 +178,10 @@ public class GAEngine {
 
             //extract best individual
             Individual bestIndividual = allIndividuals.get(0);
-            System.out.println("kalergi %: "+Settings.getInstance().getKalergi());
-            System.out.println("Total population: "+allIndividuals.size());
+            if(Settings.getInstance().isViewResults()) {
+                System.out.println("kalergi %: " + Settings.getInstance().getKalergi());
+                System.out.println("Total population: " + allIndividuals.size());
+            }
             //kalergi count calculation  (population : 100 = x : 0.4 )  ---
             int kalergiNumberOfIndividuals = (int) ((float)Settings.getInstance().getKalergi() * (float)allIndividuals.size());
             //generate kalergi individuals
@@ -194,13 +213,25 @@ public class GAEngine {
 
             population.setIndividuals(newPopulation);
 
-            //print iteration
-            System.out.println("Iteration: " + cycle + " Best fitness: " + bestIndividual.getFitness());
-            //print best individual
-            System.out.println("Best individual: " + bestIndividual);
-            System.out.println("-------------------------------------------------------------------------------------");
+            if(Settings.getInstance().isViewResults()) {
+                //print iteration
+                System.out.println("Iteration: " + cycle + " Best fitness: " + bestIndividual.getFitness());
+                //print best individual
+                System.out.println("Best individual: " + bestIndividual);
+                System.out.println("-------------------------------------------------------------------------------------");
 
-            population.printWithManyJobs();
+                population.printWithManyJobs();
+            }
+            
+            //calcola la media delle fitness di tutti gli individui
+//            float avgFitness = 0;
+//            for (int i = 0; i < population.getIndividuals().length; i++) {
+//                avgFitness += population.getIndividuals()[i].getFitness();
+//            }
+//            avgFitness = avgFitness / population.getIndividuals().length;
+//            System.out.println("AVG FITNESS: " + avgFitness);
+//            EventManager.getInstance().newAVG(avgFitness);
+//            EventManager.getInstance().nextCycle(cycle);
         }
 
 

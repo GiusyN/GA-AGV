@@ -31,7 +31,7 @@ public class MasterThesisGa {
             FlatIntelliJLaf.installLafInfo();
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 System.out.println("---- lf -> " + info.getName());
-                if ("FlatLaf IntelliJ".equals(info.getName())) {
+                if (ProcessViewerFrame.LIGHT_THEME.equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -69,7 +69,7 @@ public class MasterThesisGa {
             System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
             System.out.println("Ciao Luca come va tutt'appost ?");
             Settings.getInstance().setElitism(10);
-            GAEngine.getInstance().setMaxCycle(3000);
+            GAEngine.getInstance().setMaxCycle(15000);
             Settings.getInstance().setVerbose(false);
             Settings.getInstance().setBatteryCapacity(12);
             Settings.getInstance().setMaxTime(50);

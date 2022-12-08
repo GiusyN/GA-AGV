@@ -6,21 +6,75 @@ package edu.ga.master.ga.gui;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import edu.ga.master.ga.algo.GAEngine;
+import edu.ga.master.ga.gui.events.EventManager;
+import edu.ga.master.ga.gui.events.SolutionListener;
+import edu.ga.master.ga.model.Individual;
+import edu.ga.master.ga.utils.Settings;
+import it.cnr.istc.icv.engine.EmbeddablePanel;
+import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
+import it.cnr.istc.icv.test.LinearDataSupporter;
+import it.cnr.istc.icv.test.TimeValueSupporterClass;
+import java.awt.Color;
+import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author sommovir
  */
-public class ProcessViewerFrame extends javax.swing.JFrame {
-    
+public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionListener {
+
     public static final String LIGHT_THEME = "FlatLaf IntelliJ";
     public static final String DARK_THEME = "FlatLaf Darcula";
+    private float startFitness;
+    private float currentFitness;
+    final static EmbeddablePanel panel = new EmbeddablePanel();
+    int x = 0;
+    private int avgEach = 100;
 
     /**
      * Creates new form ProcessViewerFrame
      */
     public ProcessViewerFrame() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        EventManager.getInstance().addSolutionListener(this);
+        Settings.getInstance().setViewResults(this.jCheckBox_preview.isSelected());
+        panel.getMixedPanel().LEFT_MARGIN = 40;
+        panel.getMixedPanel().setStartRange(0);
+        panel.getMixedPanel().setEndRange(GAEngine.getInstance().getMaxCycle());
+        panel.getMixedPanel().setShowDate(false);
+        panel.getMixedPanel().setBackground(Color.WHITE);
+        panel.getMixedPanel().setZoomEnable(true);
+        panel.setXTooltipLabel("Cicli");
+        panel.setYTooltipLabel("Fitness");
+
+        LinearDataSupporter s = new LinearDataSupporter("Soluzione");
+        s.setColorToSubChart("Best Fitness", Color.RED);
+        s.setColorToSubChart("AVG Fitness", Color.BLUE);
+        s.setDotVisible(true);
+        s.setSubChartWithDots("Best Fitness", true);
+        s.setSubChartWithDots("AVG Fitness", false);
+        s.setOrder(1);
+        s.setDiscret(false);
+//        s.setMaxValueToShow(10);
+//        s.setMinValueToShow(0);
+
+//        s.
+//        LinearDataSupporter s2 = new LinearDataSupporter("AVG fitness");
+//        s2.setOrder(2);
+//        s2.setDiscret(false);
+        panel.getMixedPanel().addDataBar(s);
+//        panel.getMixedPanel().addDataBar(s2);
+//        MyLayer<JPanel> layerUI = new ZoomLabeledLayer(panel);
+//        JPanel containerP = new JPanel();
+//        containerP.setLayout(new GridLayout(0, 1));
+//        containerP.add(panel);
+//
+//        MyJLayer<JPanel> jlayer = new MyJLayer<JPanel>(panel, layerUI);
+//        containerP.add(jlayer);
+        this.jScrollPane1.setViewportView(panel);
     }
 
     /**
@@ -38,7 +92,23 @@ public class ProcessViewerFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jSlider1 = new javax.swing.JSlider();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBox_AVG = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel_elapsed = new javax.swing.JLabel();
+        jLabel_Iterazioni = new javax.swing.JLabel();
+        jLabel_currentFitness = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel_startFitness = new javax.swing.JLabel();
+        jCheckBox_preview = new javax.swing.JCheckBox();
+        jToolBar1 = new javax.swing.JToolBar();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jPanel_nothing = new javax.swing.JPanel();
+        jLabel_runningMessage = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -47,10 +117,54 @@ public class ProcessViewerFrame extends javax.swing.JFrame {
 
         jButton2.setText("jButton2");
 
-        jCheckBox1.setText("ok");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBox_AVG.setSelected(true);
+        jCheckBox_AVG.setText("AVG");
+        jCheckBox_AVG.setName(""); // NOI18N
+        jCheckBox_AVG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                jCheckBox_AVGActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("EsapsedTime: ");
+
+        jLabel2.setText("Start Fitness");
+
+        jLabel1.setText("Iterations");
+
+        jLabel_elapsed.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel_elapsed.setForeground(new java.awt.Color(51, 255, 255));
+        jLabel_elapsed.setText("-");
+        jLabel_elapsed.setOpaque(true);
+
+        jLabel_Iterazioni.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel_Iterazioni.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel_Iterazioni.setForeground(new java.awt.Color(255, 255, 0));
+        jLabel_Iterazioni.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel_Iterazioni.setText("1/300");
+        jLabel_Iterazioni.setOpaque(true);
+
+        jLabel_currentFitness.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel_currentFitness.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel_currentFitness.setForeground(new java.awt.Color(51, 204, 0));
+        jLabel_currentFitness.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel_currentFitness.setText("143");
+        jLabel_currentFitness.setOpaque(true);
+
+        jLabel5.setText("Current Fitness");
+
+        jLabel_startFitness.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel_startFitness.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel_startFitness.setForeground(new java.awt.Color(255, 255, 0));
+        jLabel_startFitness.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel_startFitness.setText("143");
+        jLabel_startFitness.setOpaque(true);
+
+        jCheckBox_preview.setText("Preview Result in Console");
+        jCheckBox_preview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox_previewActionPerformed(evt);
             }
         });
 
@@ -58,53 +172,137 @@ public class ProcessViewerFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(73, 73, 73)
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
-                        .addGap(142, 142, 142))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_Iterazioni, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(210, 210, 210)
+                        .addComponent(jLabel2))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(12, 12, 12)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jCheckBox_AVG)
+                        .addGap(55, 55, 55)
+                        .addComponent(jCheckBox_preview)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)
-                        .addGap(37, 37, 37)))
-                .addComponent(jButton2)
-                .addGap(144, 144, 144))
+                        .addGap(45, 45, 45)
+                        .addComponent(jButton2)
+                        .addGap(140, 140, 140))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel_startFitness, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 333, Short.MAX_VALUE)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_currentFitness, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(140, 140, 140)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel_elapsed, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(38, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2)
-                            .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(24, 24, 24))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
-                        .addContainerGap())))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jButton1)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel_elapsed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel_Iterazioni)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel_startFitness)
+                        .addComponent(jLabel5)
+                        .addComponent(jLabel_currentFitness)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox_AVG)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1)
+                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBox_preview))
+                .addContainerGap())
         );
+
+        jToolBar1.setRollover(true);
+
+        jButton3.setText("PLAY");
+        jButton3.setFocusable(false);
+        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton3);
+
+        jButton4.setText("START");
+        jButton4.setFocusable(false);
+        jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton4);
+
+        jButton5.setText("VIEW");
+        jButton5.setFocusable(false);
+        jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton5);
+
+        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+
+        jPanel_nothing.setBackground(new java.awt.Color(51, 51, 51));
+
+        jLabel_runningMessage.setText("nothing");
+
+        javax.swing.GroupLayout jPanel_nothingLayout = new javax.swing.GroupLayout(jPanel_nothing);
+        jPanel_nothing.setLayout(jPanel_nothingLayout);
+        jPanel_nothingLayout.setHorizontalGroup(
+            jPanel_nothingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_nothingLayout.createSequentialGroup()
+                .addGap(363, 363, 363)
+                .addComponent(jLabel_runningMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(337, 337, 337))
+        );
+        jPanel_nothingLayout.setVerticalGroup(
+            jPanel_nothingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_nothingLayout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addComponent(jLabel_runningMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(38, 38, 38))
+        );
+
+        jSplitPane1.setLeftComponent(jPanel_nothing);
+        jSplitPane1.setRightComponent(jScrollPane1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addComponent(jSplitPane1)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -121,9 +319,17 @@ public class ProcessViewerFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void jCheckBox_AVGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_AVGActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }//GEN-LAST:event_jCheckBox_AVGActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jCheckBox_previewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_previewActionPerformed
+        Settings.getInstance().setViewResults(this.jCheckBox_preview.isSelected());
+    }//GEN-LAST:event_jCheckBox_previewActionPerformed
 
     /**
      * @param args the command line arguments
@@ -132,11 +338,6 @@ public class ProcessViewerFrame extends javax.swing.JFrame {
         try {
             FlatDarculaLaf.installLafInfo();
             FlatIntelliJLaf.installLafInfo();
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                System.out.println("----AA lf -> " + info.getName());
-                
-            }
-            
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 System.out.println("---- lf -> " + info.getName());
                 if (LIGHT_THEME.equals(info.getName())) {
@@ -171,10 +372,96 @@ public class ProcessViewerFrame extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JCheckBox jCheckBox_AVG;
+    private javax.swing.JCheckBox jCheckBox_preview;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel_Iterazioni;
+    private javax.swing.JLabel jLabel_currentFitness;
+    private javax.swing.JLabel jLabel_elapsed;
+    private javax.swing.JLabel jLabel_runningMessage;
+    private javax.swing.JLabel jLabel_startFitness;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel_nothing;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
+    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void start(float initialFitness) {
+        this.startFitness = initialFitness;
+        this.x = 0;
+        panel.getMixedPanel().setEndRange(GAEngine.getInstance().getMaxCycle());
+        this.jLabel_Iterazioni.setText("0/" + GAEngine.getInstance().getMaxCycle() + " ");
+        this.jLabel_startFitness.setText("" + initialFitness + " ");
+        this.jLabel_currentFitness.setText("<html><font color = red>" + initialFitness + "</font>");
+        panel.getMixedPanel().setEndRange(GAEngine.getInstance().getMaxCycle());
+        panel.getMixedPanel().clearLinearDataBar("Soluzione");
+        panel.getMixedPanel().setNowLineVisible(true);
+        TimeValueSupporterClass ds1 = new TimeValueSupporterClass(initialFitness, "Best Fitness", new Date(x));
+        try {
+            panel.getMixedPanel().addLinearData("Soluzione", ds1, true);
+        } catch (TypeDataMismatchException ex) {
+            ex.printStackTrace();
+        }
+        this.jLabel_elapsed.setText("running..");
+        this.jSplitPane1.setLeftComponent(this.jPanel_nothing);
+        this.jLabel_runningMessage.setForeground(Color.YELLOW);
+        this.jLabel_runningMessage.setText("Calculating new solution..");
+
+    }
+
+    @Override
+    public void end(Individual bestone) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void newImprovement(Individual bestone, float newFitness) {
+        this.currentFitness = newFitness;
+        this.jLabel_currentFitness.setText("" + newFitness + " ");
+        TimeValueSupporterClass ds1 = new TimeValueSupporterClass(newFitness, "Best Fitness", new Date(x));
+        try {
+            panel.getMixedPanel().addLinearData("Soluzione", ds1, true);
+        } catch (TypeDataMismatchException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void nextCycle(int cycle) {
+        cycle++;
+        this.jLabel_Iterazioni.setText(cycle + "/" + GAEngine.getInstance().getMaxCycle() + " ");
+        x = cycle;
+
+        panel.getMixedPanel().setFloatableNow(x);
+
+    }
+
+    @Override
+    public void newAVG(float avg) {
+        if (this.jCheckBox_AVG.isSelected()) {
+            if (x % this.avgEach == 0) {
+                TimeValueSupporterClass ds1 = new TimeValueSupporterClass(avg, "AVG Fitness", new Date(x));
+                try {
+                    panel.getMixedPanel().addLinearData("Soluzione", ds1, true);
+                } catch (TypeDataMismatchException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void kalergi() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

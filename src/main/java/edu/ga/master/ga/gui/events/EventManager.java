@@ -37,7 +37,7 @@ public class EventManager {
         this.listeners.add(listener);
     }
 
-    public void startsSimulation(int initialFitness) {
+    public void startsSimulation(float initialFitness) {
         for (SolutionListener listener : solutionListeners) {
             listener.start(initialFitness);
         }
@@ -49,7 +49,7 @@ public class EventManager {
         }
     }
 
-    public void newImprovement(Individual bestone, int newFitness) {
+    public void newImprovement(Individual bestone, float newFitness) {
         for (SolutionListener listener : solutionListeners) {
             listener.newImprovement(bestone,newFitness);
         }
@@ -85,7 +85,7 @@ public class EventManager {
         }
     }
     
-    public void newAVG(int avg){
+    public void newAVG(float avg){
         for (SolutionListener solutionListener : solutionListeners) {
             solutionListener.newAVG(avg);
         }

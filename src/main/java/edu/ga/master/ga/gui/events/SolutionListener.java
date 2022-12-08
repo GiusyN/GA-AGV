@@ -13,15 +13,15 @@ import edu.ga.master.ga.model.Individual;
  */
 public interface SolutionListener {
     
-    public void start(int initialFitness);
+    public void start(float initialFitness);
     
     public void end(Individual bestone);
     
-    public void newImprovement(Individual bestone, int newFitness);
+    public void newImprovement(Individual bestone, float newFitness);
     
     public void nextCycle(int cycle);
     
-    public void newAVG(int avg);
+    public void newAVG(float avg);
     
     public void kalergi();
     
