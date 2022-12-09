@@ -60,6 +60,7 @@ public class GAEngine {
 
         float best_fitness = population.getIndividuals()[0].getFitness();
         EventManager.getInstance().startsSimulation(best_fitness);
+        JOptionPane.showMessageDialog(null, "Start simulation and best fitness is: " + best_fitness);
         EventManager.getInstance().newImprovement(population.getIndividuals()[0], best_fitness);
 
         //cicle until max cycle

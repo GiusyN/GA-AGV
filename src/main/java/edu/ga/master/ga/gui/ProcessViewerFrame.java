@@ -7,20 +7,28 @@ package edu.ga.master.ga.gui;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import edu.ga.master.ga.algo.GAEngine;
+import edu.ga.master.ga.cli.ConsoleColors;
+import edu.ga.master.ga.exceptions.BatteryException;
+import edu.ga.master.ga.exceptions.GAInconsistencyException;
+import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
 import edu.ga.master.ga.gui.events.EventManager;
 import edu.ga.master.ga.gui.events.SolutionListener;
 import edu.ga.master.ga.model.Individual;
+import edu.ga.master.ga.model.JobManager;
+import edu.ga.master.ga.model.Population;
+import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import it.cnr.istc.icv.engine.EmbeddablePanel;
 import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
 import it.cnr.istc.icv.test.LinearDataSupporter;
 import it.cnr.istc.icv.test.TimeValueSupporterClass;
+
 import java.awt.Color;
 import java.util.Date;
-import javax.swing.JOptionPane;
+import java.util.concurrent.TimeUnit;
+import javax.swing.*;
 
 /**
- *
  * @author sommovir
  */
 public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionListener {
@@ -31,7 +39,8 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
     private float currentFitness;
     final static EmbeddablePanel panel = new EmbeddablePanel();
     int x = 0;
-    private int avgEach = 100;
+    private int avgEach = 20;
+    private long startTime;
 
     /**
      * Creates new form ProcessViewerFrame
@@ -102,6 +111,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         jLabel5 = new javax.swing.JLabel();
         jLabel_startFitness = new javax.swing.JLabel();
         jCheckBox_preview = new javax.swing.JCheckBox();
+        jTextField_elapsedTime = new javax.swing.JTextField();
         jToolBar1 = new javax.swing.JToolBar();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -168,6 +178,11 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
             }
         });
 
+        jTextField_elapsedTime.setBackground(new java.awt.Color(0, 0, 0));
+        jTextField_elapsedTime.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jTextField_elapsedTime.setForeground(new java.awt.Color(0, 255, 255));
+        jTextField_elapsedTime.setText("-");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -188,42 +203,50 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 .addGap(12, 12, 12)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jCheckBox_AVG)
-                        .addGap(55, 55, 55)
-                        .addComponent(jCheckBox_preview)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
-                        .addGap(45, 45, 45)
-                        .addComponent(jButton2)
-                        .addGap(140, 140, 140))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel_startFitness, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 333, Short.MAX_VALUE)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel_currentFitness, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(140, 140, 140)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(49, 49, 49)
                         .addComponent(jLabel_elapsed, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_elapsedTime, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jCheckBox_AVG)
+                        .addGap(55, 55, 55)
+                        .addComponent(jCheckBox_preview)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addGap(179, 179, 179))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel_elapsed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(jLabel_Iterazioni)
-                        .addComponent(jLabel2)
-                        .addComponent(jLabel_startFitness)
-                        .addComponent(jLabel5)
-                        .addComponent(jLabel_currentFitness)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel3)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel_Iterazioni)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel_startFitness)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel_currentFitness)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(4, 4, 4)
+                        .addComponent(jTextField_elapsedTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addComponent(jLabel_elapsed)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCheckBox_AVG)
                     .addComponent(jButton2)
@@ -239,6 +262,11 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton3);
 
         jButton4.setText("START");
@@ -331,6 +359,79 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         Settings.getInstance().setViewResults(this.jCheckBox_preview.isSelected());
     }//GEN-LAST:event_jCheckBox_previewActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        //PLAY
+
+        //start a swing thread
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                //start the game
+                System.out.println(ConsoleColors.ANSI_YELLOW + "Hello World!" + ConsoleColors.ANSI_RESET);
+                System.out.println("Ciao Luca come va tutt'appost ?");
+                Settings.getInstance().setElitism(10);
+                GAEngine.getInstance().setMaxCycle(300);
+                Settings.getInstance().setVerbose(false);
+                Settings.getInstance().setBatteryCapacity(12);
+                Settings.getInstance().setMaxTime(50);
+                Settings.getInstance().setPopulationSize(100);
+                Settings.getInstance().setNumberOfJobs(150);
+                Settings.getInstance().setKalergi(0.4f);
+                JobManager.getInstance().init(new RealJobGenerator());
+                JobManager.getInstance().generateJobs();
+                try {
+                    JobManager.getInstance().printJobs();
+                } catch (NoGeneratedJobsException ex) {
+                    ex.printStackTrace();
+                }
+                System.out.println("------------------------------------------");
+                System.out.println("Current Battery Capacity = " + Settings.getInstance().getBatteryCapacity());
+                System.out.println("------------------------------------------");
+//            Individual individual = new Individual(Settings.getInstance().getAgvQuantity());
+//            individual.calculateFitness();
+//            individual.print();
+
+                System.out.println("********************************************");
+                System.out.println(" creation of population of size 100");
+                System.out.println("********************************************");
+                Population population = new Population.Builder() //il size è settato in settings
+                        .distribution(Population.DISTRIBUTION.EQUAL)
+                        .minimumAGV(2)
+                        .maximumAGV(6)
+                        .build();
+
+                if (Settings.getInstance().getNumberOfJobs() <= 15) {
+                    population.print(false);
+                } else {
+                    population.printWithManyJobs();
+                }
+                try {
+                    System.out.printf("RUNNIGN ALGORITHM WITH %d CYCLES %n", GAEngine.getInstance().getNumberOfCycles());
+                    ProcessViewerFrame.this.jButton3.setEnabled(false);
+                    GAEngine.getInstance().run(population);
+
+                    System.out.println("********************************************");
+                    System.out.println(" population after algorithm:");
+                } catch (GAInconsistencyException ex) {
+                    ex.printStackTrace();
+                } catch (BatteryException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (Settings.getInstance().getNumberOfJobs() <= 15) {
+                    population.print(true);
+                } else {
+                    population.printWithManyJobs();
+                }
+                EventManager.getInstance().end(population.getIndividuals()[0]);
+                return null;
+            }
+        };
+        worker.execute();
+
+
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -392,6 +493,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JTextField jTextField_elapsedTime;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 
@@ -413,15 +515,33 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
             ex.printStackTrace();
         }
         this.jLabel_elapsed.setText("running..");
+        this.jTextField_elapsedTime.setText("running..");
         this.jSplitPane1.setLeftComponent(this.jPanel_nothing);
         this.jLabel_runningMessage.setForeground(Color.YELLOW);
         this.jLabel_runningMessage.setText("Calculating new solution..");
+        //set start time
+        this.startTime = System.currentTimeMillis();
+        this.jLabel_startFitness.setText("" + initialFitness + " ");
+
 
     }
 
     @Override
     public void end(Individual bestone) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.jButton3.setEnabled(true);
+        //calculate end time
+        long endTime = System.currentTimeMillis();
+        long time = endTime - startTime;
+        //format time in mm:ss:sss
+        String timeString = String.format("%02d:%02d:%03d", TimeUnit.MILLISECONDS.toMinutes(time),
+                TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)),
+                time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time)));
+
+        this.jLabel_elapsed.setText("" + timeString + " ms");
+        this.jTextField_elapsedTime.setText("" + timeString + " ms");
+        this.jLabel_runningMessage.setForeground(Color.GREEN);
+        this.jLabel_runningMessage.setText("Finished!");
+       // this.jLabel_currentFitness.setText("" + bestone.getFitness() + " ");
     }
 
     @Override

@@ -66,60 +66,60 @@ public class MasterThesisGa {
         
         
 //        try {
-            System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
-            System.out.println("Ciao Luca come va tutt'appost ?");
-            Settings.getInstance().setElitism(10);
-            GAEngine.getInstance().setMaxCycle(15000);
-            Settings.getInstance().setVerbose(false);
-            Settings.getInstance().setBatteryCapacity(12);
-            Settings.getInstance().setMaxTime(50);
-            Settings.getInstance().setPopulationSize(100);
-            Settings.getInstance().setNumberOfJobs(150);
-            Settings.getInstance().setKalergi(0.4f);
-            JobManager.getInstance().init(new RealJobGenerator());
-            JobManager.getInstance().generateJobs();
-            try {
-                JobManager.getInstance().printJobs();
-            } catch (NoGeneratedJobsException ex) {
-                ex.printStackTrace();
-            }
-            System.out.println("------------------------------------------");
-            System.out.println("Current Battery Capacity = " + Settings.getInstance().getBatteryCapacity());
-            System.out.println("------------------------------------------");
-//            Individual individual = new Individual(Settings.getInstance().getAgvQuantity());
-//            individual.calculateFitness();
-//            individual.print();
-
-            System.out.println("********************************************");
-            System.out.println(" creation of population of size 100");
-            System.out.println("********************************************");
-            Population population = new Population.Builder() //il size è settato in settings
-                    .distribution(Population.DISTRIBUTION.EQUAL)
-                    .minimumAGV(2)
-                    .maximumAGV(6)
-                    .build();
-
-            if(Settings.getInstance().getNumberOfJobs() <= 15){
-                population.print(false);
-            }else{
-                population.printWithManyJobs();
-            }
-            try {
-                System.out.printf("RUNNIGN ALGORITHM WITH %d CYCLES %n", GAEngine.getInstance().getNumberOfCycles());
-
-                GAEngine.getInstance().run(population);
-
-                System.out.println("********************************************");
-                System.out.println(" population after algorithm:");
-            } catch (GAInconsistencyException ex) {
-                ex.printStackTrace();
-            }
-
-            if(Settings.getInstance().getNumberOfJobs() <= 15){
-                population.print(true);
-            }else{
-                population.printWithManyJobs();
-            }
+//            System.out.println(ConsoleColors.ANSI_YELLOW+"Hello World!"+ConsoleColors.ANSI_RESET);
+//            System.out.println("Ciao Luca come va tutt'appost ?");
+//            Settings.getInstance().setElitism(10);
+//            GAEngine.getInstance().setMaxCycle(15000);
+//            Settings.getInstance().setVerbose(false);
+//            Settings.getInstance().setBatteryCapacity(12);
+//            Settings.getInstance().setMaxTime(50);
+//            Settings.getInstance().setPopulationSize(100);
+//            Settings.getInstance().setNumberOfJobs(150);
+//            Settings.getInstance().setKalergi(0.4f);
+//            JobManager.getInstance().init(new RealJobGenerator());
+//            JobManager.getInstance().generateJobs();
+//            try {
+//                JobManager.getInstance().printJobs();
+//            } catch (NoGeneratedJobsException ex) {
+//                ex.printStackTrace();
+//            }
+//            System.out.println("------------------------------------------");
+//            System.out.println("Current Battery Capacity = " + Settings.getInstance().getBatteryCapacity());
+//            System.out.println("------------------------------------------");
+////            Individual individual = new Individual(Settings.getInstance().getAgvQuantity());
+////            individual.calculateFitness();
+////            individual.print();
+//
+//            System.out.println("********************************************");
+//            System.out.println(" creation of population of size 100");
+//            System.out.println("********************************************");
+//            Population population = new Population.Builder() //il size è settato in settings
+//                    .distribution(Population.DISTRIBUTION.EQUAL)
+//                    .minimumAGV(2)
+//                    .maximumAGV(6)
+//                    .build();
+//
+//            if(Settings.getInstance().getNumberOfJobs() <= 15){
+//                population.print(false);
+//            }else{
+//                population.printWithManyJobs();
+//            }
+//            try {
+//                System.out.printf("RUNNIGN ALGORITHM WITH %d CYCLES %n", GAEngine.getInstance().getNumberOfCycles());
+//
+//                GAEngine.getInstance().run(population);
+//
+//                System.out.println("********************************************");
+//                System.out.println(" population after algorithm:");
+//            } catch (GAInconsistencyException ex) {
+//                ex.printStackTrace();
+//            }
+//
+//            if(Settings.getInstance().getNumberOfJobs() <= 15){
+//                population.print(true);
+//            }else{
+//                population.printWithManyJobs();
+//            }
 
 //        } catch (BatteryException ex) {
 //            ex.printStackTrace();
