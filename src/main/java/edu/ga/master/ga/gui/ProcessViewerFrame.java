@@ -18,14 +18,19 @@ import edu.ga.master.ga.model.JobManager;
 import edu.ga.master.ga.model.Population;
 import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
+import edu.ga.master.ga.utils.SimpleAudioPlayer;
 import it.cnr.istc.icv.engine.EmbeddablePanel;
+import it.cnr.istc.icv.engine.MixedDataPanel;
 import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
 import it.cnr.istc.icv.test.LinearDataSupporter;
 import it.cnr.istc.icv.test.TimeValueSupporterClass;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 
 /**
@@ -39,7 +44,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
     private float currentFitness;
     final static EmbeddablePanel panel = new EmbeddablePanel();
     int x = 0;
-    private int avgEach = 20;
+    private int avgEach = 10;
     private long startTime;
 
     /**
@@ -370,10 +375,10 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 System.out.println(ConsoleColors.ANSI_YELLOW + "Hello World!" + ConsoleColors.ANSI_RESET);
                 System.out.println("Ciao Luca come va tutt'appost ?");
                 Settings.getInstance().setElitism(10);
-                GAEngine.getInstance().setMaxCycle(300);
+                GAEngine.getInstance().setMaxCycle(3000);
                 Settings.getInstance().setVerbose(false);
-                Settings.getInstance().setBatteryCapacity(12);
-                Settings.getInstance().setMaxTime(50);
+                Settings.getInstance().setBatteryCapacity(20);
+                Settings.getInstance().setMaxTime(130);
                 Settings.getInstance().setPopulationSize(100);
                 Settings.getInstance().setNumberOfJobs(150);
                 Settings.getInstance().setKalergi(0.4f);
@@ -541,6 +546,15 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         this.jTextField_elapsedTime.setText("" + timeString + " ms");
         this.jLabel_runningMessage.setForeground(Color.GREEN);
         this.jLabel_runningMessage.setText("Finished!");
+
+        MixedDataPanel mdp = new MixedDataPanel();
+        mdp.setEndRange(GAEngine.getInstance().getMaxCycle());
+
+
+
+
+
+
        // this.jLabel_currentFitness.setText("" + bestone.getFitness() + " ");
     }
 
@@ -551,8 +565,18 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         TimeValueSupporterClass ds1 = new TimeValueSupporterClass(newFitness, "Best Fitness", new Date(x));
         try {
             panel.getMixedPanel().addLinearData("Soluzione", ds1, true);
+            SimpleAudioPlayer audioPlayer =
+                    new SimpleAudioPlayer();
+            audioPlayer.load("./src/main/resources/audios/warning.wav");
+            audioPlayer.play();
         } catch (TypeDataMismatchException ex) {
             ex.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            throw new RuntimeException(e);
+        } catch (LineUnavailableException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
