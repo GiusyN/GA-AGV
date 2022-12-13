@@ -13,21 +13,26 @@ import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
 import edu.ga.master.ga.gui.events.EventManager;
 import edu.ga.master.ga.gui.events.SolutionListener;
+import edu.ga.master.ga.model.AssignedJob;
 import edu.ga.master.ga.model.Individual;
 import edu.ga.master.ga.model.JobManager;
 import edu.ga.master.ga.model.Population;
 import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.SimpleAudioPlayer;
-import it.cnr.istc.icv.engine.EmbeddablePanel;
-import it.cnr.istc.icv.engine.MixedDataPanel;
+import it.cnr.istc.icv.engine.*;
 import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
+import it.cnr.istc.icv.test.BooleanDataSupporter;
+import it.cnr.istc.icv.test.LinearBooleanDataSupporter;
 import it.cnr.istc.icv.test.LinearDataSupporter;
 import it.cnr.istc.icv.test.TimeValueSupporterClass;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -103,20 +108,19 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jSlider1 = new javax.swing.JSlider();
         jCheckBox_AVG = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel_elapsed = new javax.swing.JLabel();
         jLabel_Iterazioni = new javax.swing.JLabel();
-        jLabel_currentFitness = new javax.swing.JLabel();
+        jLabel_solutionAGV = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel_startFitness = new javax.swing.JLabel();
         jCheckBox_preview = new javax.swing.JCheckBox();
         jTextField_elapsedTime = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel_currentFitness1 = new javax.swing.JLabel();
         jToolBar1 = new javax.swing.JToolBar();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -127,10 +131,6 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         jScrollPane1 = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jButton1.setText("jButton1");
-
-        jButton2.setText("jButton2");
 
         jCheckBox_AVG.setSelected(true);
         jCheckBox_AVG.setText("AVG");
@@ -148,11 +148,6 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
 
         jLabel1.setText("Iterations");
 
-        jLabel_elapsed.setBackground(new java.awt.Color(51, 51, 51));
-        jLabel_elapsed.setForeground(new java.awt.Color(51, 255, 255));
-        jLabel_elapsed.setText("-");
-        jLabel_elapsed.setOpaque(true);
-
         jLabel_Iterazioni.setBackground(new java.awt.Color(51, 51, 51));
         jLabel_Iterazioni.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         jLabel_Iterazioni.setForeground(new java.awt.Color(255, 255, 0));
@@ -160,12 +155,12 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         jLabel_Iterazioni.setText("1/300");
         jLabel_Iterazioni.setOpaque(true);
 
-        jLabel_currentFitness.setBackground(new java.awt.Color(51, 51, 51));
-        jLabel_currentFitness.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
-        jLabel_currentFitness.setForeground(new java.awt.Color(51, 204, 0));
-        jLabel_currentFitness.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel_currentFitness.setText("143");
-        jLabel_currentFitness.setOpaque(true);
+        jLabel_solutionAGV.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel_solutionAGV.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel_solutionAGV.setForeground(new java.awt.Color(51, 204, 0));
+        jLabel_solutionAGV.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel_solutionAGV.setText("unknown");
+        jLabel_solutionAGV.setOpaque(true);
 
         jLabel5.setText("Current Fitness");
 
@@ -188,6 +183,15 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         jTextField_elapsedTime.setForeground(new java.awt.Color(0, 255, 255));
         jTextField_elapsedTime.setText("-");
 
+        jLabel4.setText("Number of AGV of the Solution:");
+
+        jLabel_currentFitness1.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel_currentFitness1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel_currentFitness1.setForeground(new java.awt.Color(51, 204, 0));
+        jLabel_currentFitness1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel_currentFitness1.setText("143");
+        jLabel_currentFitness1.setOpaque(true);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -205,57 +209,53 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(12, 12, 12)
+                .addGap(24, 24, 24)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel_startFitness, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 333, Short.MAX_VALUE)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel_currentFitness, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(49, 49, 49)
-                        .addComponent(jLabel_elapsed, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_elapsedTime, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jCheckBox_AVG)
                         .addGap(55, 55, 55)
                         .addComponent(jCheckBox_preview)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(jLabel4)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel_solutionAGV, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel_currentFitness1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(134, 134, 134)
+                        .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
-                        .addGap(179, 179, 179))))
+                        .addComponent(jTextField_elapsedTime, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel3)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel_Iterazioni)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel_startFitness)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel_currentFitness)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addComponent(jTextField_elapsedTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jTextField_elapsedTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel_Iterazioni)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel_startFitness)
+                        .addComponent(jLabel5)
+                        .addComponent(jLabel_currentFitness1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel_solutionAGV))
+                .addContainerGap(23, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(16, Short.MAX_VALUE)
-                .addComponent(jLabel_elapsed)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCheckBox_AVG)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)
                     .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCheckBox_preview))
                 .addContainerGap())
@@ -326,7 +326,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(jSplitPane1)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1194, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -335,7 +335,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -375,12 +375,12 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 System.out.println(ConsoleColors.ANSI_YELLOW + "Hello World!" + ConsoleColors.ANSI_RESET);
                 System.out.println("Ciao Luca come va tutt'appost ?");
                 Settings.getInstance().setElitism(10);
-                GAEngine.getInstance().setMaxCycle(3000);
+                GAEngine.getInstance().setMaxCycle(100);
                 Settings.getInstance().setVerbose(false);
                 Settings.getInstance().setBatteryCapacity(20);
-                Settings.getInstance().setMaxTime(130);
+                Settings.getInstance().setMaxTime(150);
                 Settings.getInstance().setPopulationSize(100);
-                Settings.getInstance().setNumberOfJobs(150);
+                Settings.getInstance().setNumberOfJobs(50);
                 Settings.getInstance().setKalergi(0.4f);
                 JobManager.getInstance().init(new RealJobGenerator());
                 JobManager.getInstance().generateJobs();
@@ -476,8 +476,6 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -486,11 +484,12 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel_Iterazioni;
-    private javax.swing.JLabel jLabel_currentFitness;
-    private javax.swing.JLabel jLabel_elapsed;
+    private javax.swing.JLabel jLabel_currentFitness1;
     private javax.swing.JLabel jLabel_runningMessage;
+    private javax.swing.JLabel jLabel_solutionAGV;
     private javax.swing.JLabel jLabel_startFitness;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -509,7 +508,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         panel.getMixedPanel().setEndRange(GAEngine.getInstance().getMaxCycle());
         this.jLabel_Iterazioni.setText("0/" + GAEngine.getInstance().getMaxCycle() + " ");
         this.jLabel_startFitness.setText("" + initialFitness + " ");
-        this.jLabel_currentFitness.setText("<html><font color = red>" + initialFitness + "</font>");
+        this.jLabel_currentFitness1.setText("<html><font color = red>" + initialFitness + "</font>");
         panel.getMixedPanel().setEndRange(GAEngine.getInstance().getMaxCycle());
         panel.getMixedPanel().clearLinearDataBar("Soluzione");
         panel.getMixedPanel().setNowLineVisible(true);
@@ -519,7 +518,6 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         } catch (TypeDataMismatchException ex) {
             ex.printStackTrace();
         }
-        this.jLabel_elapsed.setText("running..");
         this.jTextField_elapsedTime.setText("running..");
         this.jSplitPane1.setLeftComponent(this.jPanel_nothing);
         this.jLabel_runningMessage.setForeground(Color.YELLOW);
@@ -535,6 +533,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
     public void end(Individual bestone) {
         this.jButton3.setEnabled(true);
         //calculate end time
+        this.jLabel_solutionAGV.setText(bestone.getNumAGV() + "");
         long endTime = System.currentTimeMillis();
         long time = endTime - startTime;
         //format time in mm:ss:sss
@@ -542,7 +541,6 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)),
                 time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time)));
 
-        this.jLabel_elapsed.setText("" + timeString + " ms");
         this.jTextField_elapsedTime.setText("" + timeString + " ms");
         this.jLabel_runningMessage.setForeground(Color.GREEN);
         this.jLabel_runningMessage.setText("Finished!");
@@ -550,18 +548,65 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
         MixedDataPanel mdp = new MixedDataPanel();
         mdp.setEndRange(GAEngine.getInstance().getMaxCycle());
 
+        mdp.setBackgroundChartColor(Color.WHITE);
+        mdp.setBackground(Color.WHITE);
+
+        long nowTime = new Date().getTime();
+
+        float makespan = bestone.getMakespan();
+
+        mdp.setStartRange(nowTime);
+        mdp.setEndRange(nowTime + (long) (makespan * 60 * 1000)); //trasformo le unità del makespan in minuti
+
+        mdp.setZoomEnable(true);
+        MyLayer<JPanel> layerUI = new ZoomLayer(mdp);
+        JPanel containerP = new JPanel();
+        containerP.setLayout(new GridLayout(0, 1));
+        containerP.add(mdp);
+
+        MyJLayer<JPanel> jlayer = new MyJLayer<JPanel>(mdp, layerUI);
+        containerP.add(jlayer);
+        this.jSplitPane1.setLeftComponent(containerP);
+        mdp.repaint();
 
 
+        //get all available agv
+        int numAGV = bestone.getNumAGV();
+
+        LinkedList<AssignedJob> assignedJobs = bestone.getAssignedJobs();
+        //map all assigned Job for each agv
+        HashMap<Integer, LinkedList<AssignedJob>> map = new HashMap<Integer, LinkedList<AssignedJob>>();
+        for (int i = 0; i < numAGV; i++) {
+            map.put(i, new LinkedList<AssignedJob>());
+        }
+        for (AssignedJob aj : assignedJobs) {
+            map.get(aj.getAgv()).add(aj);
+        }
+
+        for (int i = 0; i < numAGV; i++) {
+            LinearBooleanDataSupporter bGino = new LinearBooleanDataSupporter("AGV " + i);
+//            BooleanDataSupporter bs1 = new BooleanDataSupporter(new Date(113, 9, 5, 10, 0, 0), true);
+//            BooleanDataSupporter bs2 = new BooleanDataSupporter(new Date(113, 9, 5, 11, 30, 0), false);
+//            bGino.addData(bs1);
+//            bGino.addData(bs2);
+            Map<Boolean, String> bMap = new HashMap<Boolean, String>();
+            bMap.put(true, "Working");
+            bMap.put(false, "Reloading");
+            bGino.mapValues("Gino", bMap);
+            mdp.addDataBar(bGino);
+//            mdp.addICVAnnotation(new ICVAnnotation("Gino", bs1.getTimeStamp().getTime(), "amico frizz", true));
+        }
 
 
-
-       // this.jLabel_currentFitness.setText("" + bestone.getFitness() + " ");
     }
+
+
+    // this.jLabel_currentFitness.setText("" + bestone.getFitness() + " ");
 
     @Override
     public void newImprovement(Individual bestone, float newFitness) {
         this.currentFitness = newFitness;
-        this.jLabel_currentFitness.setText("" + newFitness + " ");
+        this.jLabel_currentFitness1.setText("" + newFitness + " ");
         TimeValueSupporterClass ds1 = new TimeValueSupporterClass(newFitness, "Best Fitness", new Date(x));
         try {
             panel.getMixedPanel().addLinearData("Soluzione", ds1, true);

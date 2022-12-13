@@ -21,8 +21,8 @@ public class Settings {
     private int populationSize = 100;
     private int numberOfJobs = 6;
 
-    private float crossoverProbability = 0.3f; //percentuale di crossover da applicare alla popolazione
-    private float  mutationProbability = 0.2f; //20%
+    private float crossoverProbability = 0.6f; //percentuale di crossover da applicare alla popolazione
+    private float  mutationProbability = 0.2f; //percentuale di mutazione da applicare alla popolazione
     private int elitism = 10; //numero di individui da mantenere nella popolazione
     private boolean verbose = true;
     private boolean viewResults = true;
