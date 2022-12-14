@@ -13,15 +13,13 @@ import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.exceptions.NoGeneratedJobsException;
 import edu.ga.master.ga.gui.events.EventManager;
 import edu.ga.master.ga.gui.events.SolutionListener;
-import edu.ga.master.ga.model.AssignedJob;
-import edu.ga.master.ga.model.Individual;
-import edu.ga.master.ga.model.JobManager;
-import edu.ga.master.ga.model.Population;
+import edu.ga.master.ga.model.*;
 import edu.ga.master.ga.model.impl.RealJobGenerator;
 import edu.ga.master.ga.utils.Settings;
 import edu.ga.master.ga.utils.SimpleAudioPlayer;
 import it.cnr.istc.icv.engine.*;
 import it.cnr.istc.icv.exceptions.TypeDataMismatchException;
+import it.cnr.istc.icv.logic.ICVAnnotation;
 import it.cnr.istc.icv.test.BooleanDataSupporter;
 import it.cnr.istc.icv.test.LinearBooleanDataSupporter;
 import it.cnr.istc.icv.test.LinearDataSupporter;
@@ -375,13 +373,14 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 System.out.println(ConsoleColors.ANSI_YELLOW + "Hello World!" + ConsoleColors.ANSI_RESET);
                 System.out.println("Ciao Luca come va tutt'appost ?");
                 Settings.getInstance().setElitism(10);
-                GAEngine.getInstance().setMaxCycle(100);
+                GAEngine.getInstance().setMaxCycle(500);
                 Settings.getInstance().setVerbose(false);
-                Settings.getInstance().setBatteryCapacity(20);
-                Settings.getInstance().setMaxTime(150);
+                Settings.getInstance().setBatteryCapacity(10);
+                Settings.getInstance().setMaxTime(10);
                 Settings.getInstance().setPopulationSize(100);
-                Settings.getInstance().setNumberOfJobs(50);
+                Settings.getInstance().setNumberOfJobs(40);
                 Settings.getInstance().setKalergi(0.4f);
+                Settings.getInstance().setMaximumEnergyOfJob(5);
                 JobManager.getInstance().init(new RealJobGenerator());
                 JobManager.getInstance().generateJobs();
                 try {
@@ -402,7 +401,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 Population population = new Population.Builder() //il size è settato in settings
                         .distribution(Population.DISTRIBUTION.EQUAL)
                         .minimumAGV(2)
-                        .maximumAGV(6)
+                        .maximumAGV(4)
                         .build();
 
                 if (Settings.getInstance().getNumberOfJobs() <= 15) {
@@ -531,6 +530,16 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
 
     @Override
     public void end(Individual bestone) {
+        //print best solution
+        System.out.println("Best solution found:");
+        System.out.println("-----------------------------------------------------------------------------------------");
+        LinkedList<AssignedJob> assignedJobbini = bestone.getAssignedJobs();
+        for(AssignedJob aj : assignedJobbini){
+            System.out.println(aj);
+        }
+        System.out.println("-----------------------------------------------------------------------------------------");
+
+
         this.jButton3.setEnabled(true);
         //calculate end time
         this.jLabel_solutionAGV.setText(bestone.getNumAGV() + "");
@@ -557,8 +566,82 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
 
         mdp.setStartRange(nowTime);
         mdp.setEndRange(nowTime + (long) (makespan * 60 * 1000)); //trasformo le unità del makespan in minuti
-
         mdp.setZoomEnable(true);
+
+
+
+//        LinearBooleanDataSupporter b1 = new LinearBooleanDataSupporter("Door Contact");
+//        BooleanDataSupporter bs1 = new BooleanDataSupporter(new Date(113, 9, 5, 9, 30, 0), true);
+//        BooleanDataSupporter bs2 = new BooleanDataSupporter(new Date(113, 9, 5, 11, 0, 0), false);
+//        b1.addData(bs1);
+//        b1.addData(bs2);
+//        Map<Boolean, String> bMap = new HashMap<Boolean, String>();
+//        bMap.put(true, "Aperto e riaperto più e più volte .. ciao come va? ");
+////            bMap.put(false, "Chiuso");
+//        b1.mapValues("Door Contact", bMap);
+//        mdp.addDataBar(b1);
+
+
+
+        //get all available agv
+        int numAGV = bestone.getNumAGV();
+
+        LinkedList<AssignedJob>  allJobs = bestone.getAssignedJobs();
+        //map all assigned Job for each agv
+        HashMap<Integer, LinkedList<AssignedJob>> dataByAvgMap = new HashMap<Integer, LinkedList<AssignedJob>>();
+        try {
+            //assign all jobs to the map
+            for (AssignedJob aj : allJobs) {
+                //if the map doesn't contain the key, create a new list
+                if (!dataByAvgMap.containsKey(aj.getAgv().getId())) {
+                    dataByAvgMap.put(aj.getAgv().getId(), new LinkedList<AssignedJob>());
+                }
+                System.out.println("AGV: " + aj.getAgv().getId()+ " Job: " + aj.getJob());
+                dataByAvgMap.get(aj.getAgv().getId()).add(aj);
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        for (Integer agvId : dataByAvgMap.keySet()) {
+            LinearBooleanDataSupporter bGino = new LinearBooleanDataSupporter("AGV " + (agvId));
+//            BooleanDataSupporter bs11 = new BooleanDataSupporter(new Date(113, 9, 5, 10, 0, 0), true);
+//            BooleanDataSupporter bs22 = new BooleanDataSupporter(new Date(113, 9, 5, 11, 30, 0), false);
+//            bGino.addData(bs11);
+//            bGino.addData(bs22);
+            Map<Boolean, String> bMap2 = new HashMap<Boolean, String>();
+            bMap2.put(true, "Working");
+            bMap2.put(false, "Reloading");
+            bGino.mapValues("AGV " + (agvId), bMap2);
+            mdp.addDataBar(bGino);
+            LinkedList<AssignedJob> assignedJobs = dataByAvgMap.get(agvId);
+            for (AssignedJob aj : assignedJobs) {
+                if(aj.getJob() instanceof WorkJob) {
+                    //nowTime + (long) (makespan * 60 * 1000)
+                    BooleanDataSupporter bs1 = new BooleanDataSupporter(new Date(nowTime + (long) (aj.getStartTime() * 60 * 1000)), true);
+                    BooleanDataSupporter bs2 = new BooleanDataSupporter(new Date(nowTime + (long) (aj.getEndTime() * 60 * 1000)), false);
+                    bGino.addData(bs1);
+                    bGino.addData(bs2);
+                    mdp.addICVAnnotation(new ICVAnnotation("AGV "+(agvId), bs1.getTimeStamp().getTime(), "J"+(aj.getJob().getId()),true));
+                }else{
+//                    BooleanDataSupporter bs1 = new BooleanDataSupporter(new Date(aj.getStartTime()), false);
+//                    BooleanDataSupporter bs2 = new BooleanDataSupporter(new Date(aj.getEndTime()), true);
+//                    bGino.addData(bs1);
+//                    bGino.addData(bs2);
+                    mdp.addICVAnnotation(new ICVAnnotation("AGV "+(agvId), new Date(nowTime + (long) (aj.getStartTime() * 60 * 1000)).getTime(), "R"+(aj.getJob().getId()),true));
+                }
+
+                //J or R if job is working or reloading
+//                String label = "J";
+//                if(aj.getJob() instanceof ReloadJob){
+//                    label = "R";
+//                }
+//                mdp.addICVAnnotation(new ICVAnnotation("AGV "+(agvId), bs11.getTimeStamp().getTime(), label+(aj.getJob().getId()),true));
+            }
+
+//            mdp.addICVAnnotation(new ICVAnnotation("Gino", bs1.getTimeStamp().getTime(), "amico frizz", true));
+        }
         MyLayer<JPanel> layerUI = new ZoomLayer(mdp);
         JPanel containerP = new JPanel();
         containerP.setLayout(new GridLayout(0, 1));
@@ -566,36 +649,9 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
 
         MyJLayer<JPanel> jlayer = new MyJLayer<JPanel>(mdp, layerUI);
         containerP.add(jlayer);
+
         this.jSplitPane1.setLeftComponent(containerP);
         mdp.repaint();
-
-
-        //get all available agv
-        int numAGV = bestone.getNumAGV();
-
-        LinkedList<AssignedJob> assignedJobs = bestone.getAssignedJobs();
-        //map all assigned Job for each agv
-        HashMap<Integer, LinkedList<AssignedJob>> map = new HashMap<Integer, LinkedList<AssignedJob>>();
-        for (int i = 0; i < numAGV; i++) {
-            map.put(i, new LinkedList<AssignedJob>());
-        }
-        for (AssignedJob aj : assignedJobs) {
-            map.get(aj.getAgv()).add(aj);
-        }
-
-        for (int i = 0; i < numAGV; i++) {
-            LinearBooleanDataSupporter bGino = new LinearBooleanDataSupporter("AGV " + i);
-//            BooleanDataSupporter bs1 = new BooleanDataSupporter(new Date(113, 9, 5, 10, 0, 0), true);
-//            BooleanDataSupporter bs2 = new BooleanDataSupporter(new Date(113, 9, 5, 11, 30, 0), false);
-//            bGino.addData(bs1);
-//            bGino.addData(bs2);
-            Map<Boolean, String> bMap = new HashMap<Boolean, String>();
-            bMap.put(true, "Working");
-            bMap.put(false, "Reloading");
-            bGino.mapValues("Gino", bMap);
-            mdp.addDataBar(bGino);
-//            mdp.addICVAnnotation(new ICVAnnotation("Gino", bs1.getTimeStamp().getTime(), "amico frizz", true));
-        }
 
 
     }

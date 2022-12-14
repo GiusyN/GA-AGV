@@ -265,13 +265,9 @@ public class GAEngine {
 
     //controlla che una lista di AssignedJob non contenga duplicati
     public void fixDuplicate(LinkedList<AssignedJob> child1, LinkedList<AssignedJob> child2, int start, int end) {
-//        System.out.println("start: " + start + " end: " + end);
-
         do {
             for (int i = start; i < end; i++) {
                 for (int k = 0; k < child1.size(); k++) {
-
-                    //continue if j is between j interval
                     if (k >= start && k < end) {
                         continue;
                     }
@@ -284,17 +280,6 @@ public class GAEngine {
         } while (checkDuplicateJobId(child1));
         //check if there are duplicates
 
-//        for (int i = 0; i < child1.size(); i++) {
-//            for (int j = 0; j < child1.size(); j++) {
-//                if (i == j) {
-//                    continue;
-//                }
-//                if (child1.get(i).getJob().getId() == child1.get(j).getJob().getId()) {
-//                    System.out.println("duplicate found");
-//                    child1.get(i).setJob(child2.get(j).getJob());
-//                }
-//            }
-//        }
 
         if (Settings.getInstance().isVerbose()) {
             //CHILD 1
@@ -315,8 +300,6 @@ public class GAEngine {
     }
 
     public Pair<Individual, Individual> crossover(@NotNull Individual dad, @NotNull Individual mum) {
-
-
         //TEST
         //print dad
         if (Settings.getInstance().isVerbose()) {
@@ -443,7 +426,6 @@ public class GAEngine {
             int swapPoint = child1AssignedJobs.size() / 2;
 
             //swap the first half of assigned agv from the kid1 to the kid2
-//            System.out.println("swapPoint: " + swapPoint);
 
             for (int i = 0; i < swapPoint; i++) {
                 kid1.getAssignedJobs().get(i).setAgv(agvsDad.get(i));

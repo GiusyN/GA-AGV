@@ -25,8 +25,12 @@ public class RealJobGenerator implements JobGenerator{
         for (int i = 0; i < n; i++) {
            jobs.add(new WorkJob(
                    i,  //id
-                   Utils.randomInRange(1, Settings.getInstance().getMaxTime()+1), //time
-                   Utils.randomInRange(1, Settings.getInstance().getBatteryCapacity()+1) //energy
+                   Utils.randomInRange(
+                           1,
+                           Settings.getInstance().getMaxTime()+1), //time
+                   Utils.randomInRange(
+                           Settings.getInstance().getMinimumEnergyOfJob(),
+                           Settings.getInstance().getMaximumEnergyOfJob()+1) //energy
            ));
         }
         return jobs;

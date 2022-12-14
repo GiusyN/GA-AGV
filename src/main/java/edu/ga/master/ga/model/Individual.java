@@ -31,7 +31,7 @@ public class Individual implements Comparable<Individual> {
     private float makespan = -1f;
     private int numAGV;
     private boolean kalergi;
-    private Map<Integer, AGV> agvByIDMap = new HashMap<>();
+    //private Map<Integer, AGV> agvByIDMap = new HashMap<>();
     private Map<Integer, Integer> agvStartTimeMap = new HashMap<>();
     //    1      0
     //    2      0
@@ -57,30 +57,30 @@ public class Individual implements Comparable<Individual> {
 
     public static Individual generate(List<AssignedJob> assignedJobs) throws BatteryException, GAInconsistencyException {
         Individual individual = new Individual();
-        individual.numAGV = getNumAGV(assignedJobs);
+        individual.numAGV = calcualteNumberOfDifferentAGV(assignedJobs);
         individual.jobs.addAll(assignedJobs);
         //init avg map
-        for (AssignedJob job : assignedJobs) {
-            individual.agvByIDMap.put(job.getAgv().getId(), job.getAgv());
-        }
+//        for (AssignedJob job : assignedJobs) {
+//            individual.agvByIDMap.put(job.getAgv().getId(), job.getAgv());
+//        }
         //individual.initMaps();
 
 
         return individual;
     }
 
-    public void initMaps() {
-        for (int i = 1; i <= this.numAGV; i++) {
-            agvStartTimeMap.put(i, 0);
-            AGV agv = null;
-            try {
-                agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
-            } catch (BatteryException e) {
-                throw new RuntimeException(e);
-            }
-            agvByIDMap.put(agv.getId(), agv);
-        }
-    }
+//    public void initMaps() {
+//        for (int i = 1; i <= this.numAGV; i++) {
+//            agvStartTimeMap.put(i, 0);
+//            AGV agv = null;
+//            try {
+//                agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
+//            } catch (BatteryException e) {
+//                throw new RuntimeException(e);
+//            }
+//            agvByIDMap.put(agv.getId(), agv);
+//        }
+//    }
 
     public void setTestcode(String testcode) {
         this.testcode = testcode;
@@ -95,7 +95,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     //ritorna il numero di differenti agv in una lista di assigned jobs
-    private static int getNumAGV(List<AssignedJob> assignedJobs) {
+    private static int calcualteNumberOfDifferentAGV(List<AssignedJob> assignedJobs) {
         Set<Integer> agvIDs = new HashSet<>();
         for (AssignedJob assignedJob : assignedJobs) {
             agvIDs.add(assignedJob.getAgv().getId());
@@ -113,7 +113,7 @@ public class Individual implements Comparable<Individual> {
 
 
         //init startTime per AGV
-
+        Map<Integer, AGV> agvByIDMap = new HashMap<>();
 
         for (int i = 1; i <= this.numAGV; i++) {
             agvStartTimeMap.put(i, 0);
@@ -122,7 +122,7 @@ public class Individual implements Comparable<Individual> {
         }
 
         //order jobs by time
-       // workJobs.sort(Comparator.reverseOrder());
+        // workJobs.sort(Comparator.reverseOrder());
 
         if (Settings.getInstance().isVerbose()) {
             for (WorkJob workJob : workJobs) {
@@ -162,7 +162,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public int getNumAGV() {
-        return numAGV;
+        return calcualteNumberOfDifferentAGV(jobs);
     }
 
     public void calculateReloads() throws BatteryException, GAInconsistencyException {
@@ -176,9 +176,9 @@ public class Individual implements Comparable<Individual> {
         }
 
         //throw exception if avg map is empty
-        if (agvByIDMap.isEmpty()) {
-            throw new GAInconsistencyException("AGV map is empty");
-        }
+//        if (agvByIDMap.isEmpty()) {
+//            throw new GAInconsistencyException("AGV map is empty");
+//        }
 
         if (Settings.getInstance().isVerbose()) {
             System.out.println("                CURRENT PLAN IS: ");
@@ -190,27 +190,27 @@ public class Individual implements Comparable<Individual> {
 
 
         //clear agvByIDMAp
-        agvByIDMap.clear();
+//        agvByIDMap.clear();
 
         //setup the agv id map
 //        for (AssignedJob job : jobs) {
 //            agvByIDMap.put(job.getAgv().getId(), job.getAgv());
 //        }
 
-        for (int i = Settings.getInstance().getMinimumAGV(); i <= Settings.getInstance().getMaximumAGV(); i++) {
-            if (!agvByIDMap.containsKey(i)) {
-                AGV agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
-                agvByIDMap.put(i, agv);
-            }
-        }
+//        for (int i = Settings.getInstance().getMinimumAGV(); i <= Settings.getInstance().getMaximumAGV(); i++) {
+//            if (!agvByIDMap.containsKey(i)) {
+//                AGV agv = new AGV(i, Settings.getInstance().getBatteryCapacity());
+//                agvByIDMap.put(i, agv);
+//            }
+//        }
 
         //
 
 
         //fill all avg to max battery capacity
-        for (AGV agv : agvByIDMap.values()) {
-            agv.fill();
-        }
+//        for (AGV agv : agvByIDMap.values()) {
+//            agv.fill();
+//        }
         //fill all agv of jobs
         for (AssignedJob job : jobs) {
             if (job.getAgv() == null) {
@@ -223,107 +223,118 @@ public class Individual implements Comparable<Individual> {
         for (int i = 1; i <= this.numAGV; i++) {
             agvStartTimeMap.put(i, 0);
         }
-
+        Map<Integer, AGV> agvByIDMap = new HashMap<>();
         ListIterator<AssignedJob> iterator = jobs.listIterator();
         int index = 0;
         List<Pair<AssignedJob, Integer>> reloads = new LinkedList<>();
+        try {
+            while (iterator.hasNext()) {
+                AssignedJob assignedJob = iterator.next();
+                //AGV agv = assignedJob.getAgv();
+                //if agv is not in the map, add it
+                if (!agvByIDMap.containsKey(assignedJob.getAgv().getId())) {
+                    agvByIDMap.put(assignedJob.getAgv().getId(), new AGV(assignedJob.getAgv().getId(), Settings.getInstance().getBatteryCapacity()));
+                }
+                AGV agv = agvByIDMap.get(assignedJob.getAgv().getId());
 
-        while (iterator.hasNext()) {
-            AssignedJob assignedJob = iterator.next();
-            //AGV agv = assignedJob.getAgv();
-            //if agv is not in the map, add it
-            if (!agvByIDMap.containsKey(assignedJob.getAgv().getId())) {
-                agvByIDMap.put(assignedJob.getAgv().getId(), new AGV(assignedJob.getAgv().getId(), Settings.getInstance().getBatteryCapacity()));
-            }
-            AGV agv = agvByIDMap.get(assignedJob.getAgv().getId());
-
-            int energy = assignedJob.getJob().getEnergy();
-            if (Settings.getInstance().isVerbose()) {
-                System.out.println("the next job costs: " + energy + " and the agv n." + agv.getId() + " has: " + agv.getBatteryLevel());
-            }
-
-            if (agv.getBatteryLevel() < energy) {  //se NON ho energia sufficiente per il prossimo job
-                //inserire il nodo di ricarica
-                int energyMissingToFullCapacity = Settings.getInstance().getBatteryCapacity() - agv.getBatteryLevel();
-                int minimumEnergyForNextStep = energy - agv.getBatteryLevel();
+                int energy = assignedJob.getJob().getEnergy();
                 if (Settings.getInstance().isVerbose()) {
-                    System.out.println("Energy missing to full capacity: " + energyMissingToFullCapacity);
-                    System.out.println("Minimum energy for next step: " + minimumEnergyForNextStep);
+                    System.out.println("the next job costs: " + energy + " and the agv n." + agv.getId() + " has: " + agv.getBatteryLevel());
                 }
-                //lista contenente tutte le possibili ricariche che posso fare
-                List<Integer> allReloadsPossibilities = new LinkedList<>();
-                for (int i = minimumEnergyForNextStep; i <= energyMissingToFullCapacity; i++) {
-                    allReloadsPossibilities.add(i);
-                }
-                if (Settings.getInstance().isVerbose()) {
-                    System.out.println("All reloads possibilities: " + allReloadsPossibilities);
-                }
-                ReloadJob reloadJob = null;
-                if (allReloadsPossibilities.size() == 1) {
-                    //se ho solo una possibilità di ricarica, inserisco il job di ricarica
-                    reloadJob = new ReloadJob(agv.getId(), allReloadsPossibilities.get(0));
-                    if (Settings.getInstance().isVerbose()) {
-                        System.out.println("only 1 possibility");
-                        System.out.println(reloadJob);
-                        System.out.println("-----------------");
-                    }
-                } else {
-                    //ogni coppia è composta dalla quantità di ricarica e dal numero di task che riesce a fare con quella ricarica
-                    List<Pair<Integer, Integer>> valutazioniRicariche = new LinkedList<>();
-                    //         R1        1 task
-                    //         R2        2 task
-                    //         R3        2 task
-                    // massimizzare in base al numero di task e minimizzare in base alla quantità di ricarica
-                    for (Integer reloadPossibility : allReloadsPossibilities) {
 
-                        int numTask = 1;
-                        int energyLeft = agv.getBatteryLevel() + reloadPossibility;
-                        int nextIndex = index + 1;
-                        while (nextIndex < jobs.size() && jobs.get(nextIndex).getAgv().getId() == agv.getId() && energyLeft - jobs.get(nextIndex).getJob().getEnergy() >= jobs.get(nextIndex).getJob().getEnergy()) {
-                            energyLeft -= jobs.get(nextIndex).getJob().getEnergy();
-                            numTask++;
-                            nextIndex++;
-                        }
-                        valutazioniRicariche.add(new ImmutablePair<>(reloadPossibility, numTask));
-                    }
-                    //stampa tutte le valutazioni ricariche:
+                if (agv.getBatteryLevel() < energy) {  //se NON ho energia sufficiente per il prossimo job
+                    //inserire il nodo di ricarica
+                    int energyMissingToFullCapacity = Settings.getInstance().getBatteryCapacity() - agv.getBatteryLevel();
+                    int minimumEnergyForNextStep = energy - agv.getBatteryLevel();
                     if (Settings.getInstance().isVerbose()) {
-                        for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
-                            System.out.println("Ricarica: " + valutazioneRicarica.getLeft() + " - Task: " + valutazioneRicarica.getRight());
-                        }
+                        System.out.println("Energy missing to full capacity: " + energyMissingToFullCapacity);
+                        System.out.println("Minimum energy for next step: " + minimumEnergyForNextStep);
                     }
+                    //lista contenente tutte le possibili ricariche che posso fare
+                    List<Integer> allReloadsPossibilities = new LinkedList<>();
+                    for (int i = minimumEnergyForNextStep; i <= energyMissingToFullCapacity; i++) {
+                        allReloadsPossibilities.add(i);
+                    }
+                    if (Settings.getInstance().isVerbose()) {
+                        System.out.println("All reloads possibilities: " + allReloadsPossibilities);
+                    }
+                    ReloadJob reloadJob = null;
+                    if (allReloadsPossibilities.size() == 1) {
+                        //se ho solo una possibilità di ricarica, inserisco il job di ricarica
+                        reloadJob = new ReloadJob(agv.getId(), allReloadsPossibilities.get(0));
+                        if (Settings.getInstance().isVerbose()) {
+                            System.out.println("only 1 possibility");
+                            System.out.println(reloadJob);
+                            System.out.println("-----------------");
+                        }
+                    } else {
+                        //ogni coppia è composta dalla quantità di ricarica e dal numero di task che riesce a fare con quella ricarica
+                        List<Pair<Integer, Integer>> valutazioniRicariche = new LinkedList<>();
+                        //         R1        1 task
+                        //         R2        2 task
+                        //         R3        2 task
+                        // massimizzare in base al numero di task e minimizzare in base alla quantità di ricarica
+//                        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//                        for(AssignedJob job : jobs){
+//                            System.out.println(job);
+//
+//                        }
 
-                    //trova la coppia con il più alto numero di task e ricarica più bassa
-                    Pair<Integer, Integer> bestReload = valutazioniRicariche.get(0);
-                    for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
-                        if (valutazioneRicarica.getRight() > bestReload.getRight()) {
-                            bestReload = valutazioneRicarica;
-                        } else if (valutazioneRicarica.getRight() == bestReload.getRight()) {
-                            if (valutazioneRicarica.getLeft() < bestReload.getLeft()) {
-                                bestReload = valutazioneRicarica;
+                        for (Integer reloadPossibility : allReloadsPossibilities) {
+
+                            int numTask = 1;
+                            int energyLeft = agv.getBatteryLevel() + reloadPossibility;
+                            int nextIndex = index + 1;
+                            while (nextIndex < jobs.size() &&
+                                    jobs.get(nextIndex).getAgv().getId() == agv.getId() &&
+                                    energyLeft - jobs.get(nextIndex).getJob().getEnergy() >= jobs.get(nextIndex).getJob().getEnergy()) {
+                                energyLeft -= jobs.get(nextIndex).getJob().getEnergy();
+                                numTask++;
+                                nextIndex++;
+                            }
+                            valutazioniRicariche.add(new ImmutablePair<>(reloadPossibility, numTask));
+                        }
+                        //stampa tutte le valutazioni ricariche:
+                        if (Settings.getInstance().isVerbose()) {
+                            for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
+                                System.out.println("Ricarica: " + valutazioneRicarica.getLeft() + " - Task: " + valutazioneRicarica.getRight());
                             }
                         }
-                    }
-                    reloadJob = new ReloadJob(agv.getId(), bestReload.getLeft());
-                    //stampa best reload
-                    if (Settings.getInstance().isVerbose()) {
-                        System.out.println("Best reload: " + bestReload.getLeft() + " - Task: " + bestReload.getRight());
-                    }
-                }
 
-                reloads.add(new ImmutablePair<AssignedJob, Integer>(new AssignedJob(
-                        reloadJob,
-                        assignedJob.getAgv(),
-                        -1,
-                        -1),        //LEFT of PAIR
-                        index)        //RIGHT of PAIR
-                );
-                agv.reload(reloadJob.getEnergy());
-                agv.work(energy);
-            } else {
-                agv.work(energy);
+                        //trova la coppia con il più alto numero di task e ricarica più bassa
+                        Pair<Integer, Integer> bestReload = valutazioniRicariche.get(0);
+                        for (Pair<Integer, Integer> valutazioneRicarica : valutazioniRicariche) {
+                            if (valutazioneRicarica.getRight() > bestReload.getRight()) {
+                                bestReload = valutazioneRicarica;
+                            } else if (valutazioneRicarica.getRight() == bestReload.getRight()) {
+                                if (valutazioneRicarica.getLeft() < bestReload.getLeft()) {
+                                    bestReload = valutazioneRicarica;
+                                }
+                            }
+                        }
+                        reloadJob = new ReloadJob(agv.getId(), bestReload.getLeft());
+                        //stampa best reload
+                        if (Settings.getInstance().isVerbose()) {
+                            System.out.println("Best reload: " + bestReload.getLeft() + " - Task: " + bestReload.getRight());
+                        }
+                    }
+
+                    reloads.add(new ImmutablePair<AssignedJob, Integer>(new AssignedJob(
+                            reloadJob,
+                            assignedJob.getAgv(),
+                            -1,
+                            -1),        //LEFT of PAIR
+                            index)        //RIGHT of PAIR
+                    );
+                    agv.reload(reloadJob.getEnergy());
+                    agv.work(energy);
+                } else {
+                    agv.work(energy);
+                }
+                index++;
             }
-            index++;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         if (Settings.getInstance().isVerbose()) {
@@ -448,6 +459,47 @@ public class Individual implements Comparable<Individual> {
 
     private void calculateMakespan() {
         this.makespan = 0;
+        //map startTime for each agv
+        Map<Integer, Integer> agvStartTimeMap = new HashMap<>();
+        for (int i = 0; i< Settings.getInstance().getMaximumAGV(); i++) {
+            agvStartTimeMap.put(i, 0);
+        }
+        for (AssignedJob assignedJob : jobs) {
+            AGV agv = assignedJob.getAgv();
+            int penalty = 0;
+            if (assignedJob.getJob() instanceof ReloadJob) {
+                penalty = 1;
+            }
+            int startTime = agvStartTimeMap.get(agv.getId());
+            int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
+            assignedJob.setStartTime(startTime);
+            assignedJob.setEndTime(endTime);
+            if (endTime > this.makespan) {
+                this.makespan = endTime;
+            }
+            agvStartTimeMap.put(agv.getId(), endTime);
+        }
+
+
+        //adjiust start time and end time of reload jobs
+//        for (AssignedJob assignedJob : jobs) {
+//            int reloadDelay = 0;
+//            int previousStartTime = 0;
+//            int previousEndTime = 0;
+//
+//            if (assignedJob.getJob() instanceof ReloadJob) {
+//                reloadDelay++;
+//                assignedJob.setStartTime(previousStartTime+reloadDelay);
+//                assignedJob.setEndTime(previousEndTime+reloadDelay);
+//            }else{
+//                assignedJob.setStartTime(assignedJob.getStartTime()+reloadDelay);
+//                assignedJob.setEndTime(assignedJob.getEndTime()+reloadDelay);
+//                previousStartTime = assignedJob.getStartTime();
+//                previousEndTime = assignedJob.getEndTime();
+//            }
+//        }
+
+
         for (AssignedJob assignedJob : jobs) {
             if (assignedJob.getEndTime() > this.makespan) {
                 this.makespan = assignedJob.getEndTime();
@@ -524,9 +576,9 @@ public class Individual implements Comparable<Individual> {
             jobs.remove(reloadJob);
         }
         //refill all avg batteries
-        for (AGV agv : agvByIDMap.values()) {
-            agv.fill();
-        }
+//        for (AGV agv : agvByIDMap.values()) {
+//            agv.fill();
+//        }
     }
 
     @Override
@@ -542,14 +594,16 @@ public class Individual implements Comparable<Individual> {
     }
 
     public Individual mutate() throws BatteryException, GAInconsistencyException {
+        List<AssignedJob> workJobs = this.getWorkJobs();
+        int randomJobIndex = ThreadLocalRandom.current().nextInt(0, workJobs.size());
+        AssignedJob assignedJob = workJobs.get(randomJobIndex);
         this.clearReloads();
-        int randomJobIndex = ThreadLocalRandom.current().nextInt(0, jobs.size());
-        AssignedJob randomJob = jobs.get(randomJobIndex);
-        if (randomJob.getJob() instanceof WorkJob) {
-            int randomAGVIndex = ThreadLocalRandom.current().nextInt(Settings.getInstance().getMinimumAGV(), Settings.getInstance().getMaximumAGV());
-            AGV randomAGV = agvByIDMap.get(randomAGVIndex);
-            randomJob.setAgv(randomAGV);
-        }
+        int randomAGVIndex = ThreadLocalRandom.current().nextInt(
+                Settings.getInstance().getMinimumAGV(),
+                Settings.getInstance().getMaximumAGV()
+        );
+        AGV randomAGV = new AGV(randomAGVIndex, Settings.getInstance().getBatteryCapacity());
+        assignedJob.setAgv(randomAGV);
         this.calculateReloads();
         return this;
     }

@@ -21,7 +21,7 @@ public class Settings {
     private int populationSize = 100;
     private int numberOfJobs = 6;
 
-    private float crossoverProbability = 0.6f; //percentuale di crossover da applicare alla popolazione
+    private float crossoverProbability = 0.3f; //percentuale di crossover da applicare alla popolazione
     private float  mutationProbability = 0.2f; //percentuale di mutazione da applicare alla popolazione
     private int elitism = 10; //numero di individui da mantenere nella popolazione
     private boolean verbose = true;
@@ -30,6 +30,9 @@ public class Settings {
     private int maximumAGV = 2;
 
     private float kalergi = 0.1f;
+
+    private int minimumEnergyOfJob = 1;
+    private int maximumEnergyOfJob = 10;
 
 
     public static Settings getInstance() {
@@ -152,5 +155,21 @@ public class Settings {
     }
     public int getMaximumAGV() {
         return this.maximumAGV;
+    }
+
+    public void setMinimumEnergyOfJob(int minimumEnergyOfJob) {
+        this.minimumEnergyOfJob = minimumEnergyOfJob;
+    }
+
+    public int getMinimumEnergyOfJob() {
+        return this.minimumEnergyOfJob;
+    }
+
+    public void setMaximumEnergyOfJob(int maximumEnergyOfJob) {
+        this.maximumEnergyOfJob = maximumEnergyOfJob;
+    }
+
+    public int getMaximumEnergyOfJob() {
+        return this.maximumEnergyOfJob;
     }
 }
