@@ -470,6 +470,9 @@ public class Individual implements Comparable<Individual> {
             if (assignedJob.getJob() instanceof ReloadJob) {
                 penalty = 1;
             }
+            if(!agvStartTimeMap.containsKey(agv.getId())) {
+                agvStartTimeMap.put(agv.getId(), 0);
+            }
             int startTime = agvStartTimeMap.get(agv.getId());
             int endTime = agvStartTimeMap.get(agv.getId()) + assignedJob.getJob().getTime() + penalty;
             assignedJob.setStartTime(startTime);
