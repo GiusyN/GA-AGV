@@ -47,7 +47,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
     private float currentFitness;
     final static EmbeddablePanel panel = new EmbeddablePanel();
     int x = 0;
-    private int avgEach = 10;
+    private int avgEach = 50;
     private long startTime;
 
     /**
@@ -373,14 +373,14 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 System.out.println(ConsoleColors.ANSI_YELLOW + "Hello World!" + ConsoleColors.ANSI_RESET);
                 System.out.println("Ciao Luca come va tutt'appost ?");
                 Settings.getInstance().setElitism(10);
-                GAEngine.getInstance().setMaxCycle(1500);
+                GAEngine.getInstance().setMaxCycle(100000);
                 Settings.getInstance().setVerbose(false);
-                Settings.getInstance().setBatteryCapacity(40);
-                Settings.getInstance().setMaxTime(10);
+                Settings.getInstance().setBatteryCapacity(50);
+                Settings.getInstance().setMaxTime(50);
                 Settings.getInstance().setPopulationSize(100);
-                Settings.getInstance().setNumberOfJobs(40);
+                Settings.getInstance().setNumberOfJobs(80);
                 Settings.getInstance().setKalergi(0.4f);
-                Settings.getInstance().setMaximumEnergyOfJob(15);
+                Settings.getInstance().setMaximumEnergyOfJob(25);
                 JobManager.getInstance().init(new RealJobGenerator());
                 JobManager.getInstance().generateJobs();
                 try {
@@ -401,7 +401,7 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 Population population = new Population.Builder() //il size è settato in settings
                         .distribution(Population.DISTRIBUTION.EQUAL)
                         .minimumAGV(2)
-                        .maximumAGV(4)
+                        .maximumAGV(8)
                         .build();
 
                 if (Settings.getInstance().getNumberOfJobs() <= 15) {

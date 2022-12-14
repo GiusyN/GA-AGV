@@ -4,6 +4,7 @@
  */
 package edu.ga.master.ga.model;
 
+import edu.ga.master.ga.algo.GAEngine;
 import edu.ga.master.ga.exceptions.BatteryException;
 import edu.ga.master.ga.exceptions.GAInconsistencyException;
 import edu.ga.master.ga.utils.Settings;
@@ -122,6 +123,9 @@ public class Individual implements Comparable<Individual> {
         }
 
         //order jobs by time
+        if(GAEngine.getInstance().getCurrentCycle()>  1000 && GAEngine.getInstance().getCurrentCycle() < 2500){
+            workJobs.sort(Comparator.reverseOrder());
+        }
         // workJobs.sort(Comparator.reverseOrder());
 
         if (Settings.getInstance().isVerbose()) {

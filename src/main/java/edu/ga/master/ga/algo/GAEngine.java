@@ -25,6 +25,7 @@ public class GAEngine {
 
     private static GAEngine instance;
     private int numberOfCycles = 300;
+    private int currentCycle = 0;
 
     public enum SELECTION {
         TOURNAMENT, RANDOM
@@ -45,6 +46,14 @@ public class GAEngine {
         return instance;
     }
 
+    public int getCurrentCycle() {
+        return currentCycle;
+    }
+
+    public void setCurrentCycle(int currentCycle) {
+        this.currentCycle = currentCycle;
+    }
+
     public int getNumberOfCycles() {
         return numberOfCycles;
     }
@@ -56,7 +65,6 @@ public class GAEngine {
     public void run(Population population) throws BatteryException, GAInconsistencyException {
         //init population
 
-        
 
         float best_fitness = population.getIndividuals()[0].getFitness();
         EventManager.getInstance().startsSimulation(best_fitness);
@@ -65,32 +73,32 @@ public class GAEngine {
 
         //cicle until max cycle
         int cycle = 0;
-        if(Settings.getInstance().isViewResults()){
+        if (Settings.getInstance().isViewResults()) {
             JOptionPane.showMessageDialog(null, "CICLI: " + numberOfCycles);
         }
         while (cycle < numberOfCycles) {
-            if(Settings.getInstance().isViewResults()) {
+            if (Settings.getInstance().isViewResults()) {
                 System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                 System.out.println("                     C Y C L E  " + cycle + "                     ");
                 System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
             }
-            
+
 //            best_fitness = population.getIndividuals()[0].getFitness();
             Individual bestone = population.getIndividuals()[0];
-            if(population.getIndividuals()[0].getFitness() < best_fitness)  {
+            if (population.getIndividuals()[0].getFitness() < best_fitness) {
                 best_fitness = population.getIndividuals()[0].getFitness();
 
                 EventManager.getInstance().newImprovement(bestone, best_fitness);
-               // JOptionPane.showMessageDialog(null, "NEW IMPROVEMENT OF FITNESS: " + population.getIndividuals()[0].getFitness(),"EUREKA", JOptionPane.WARNING_MESSAGE);
+                // JOptionPane.showMessageDialog(null, "NEW IMPROVEMENT OF FITNESS: " + population.getIndividuals()[0].getFitness(),"EUREKA", JOptionPane.WARNING_MESSAGE);
             }
-            
+
             float worst_fitness = population.getIndividuals()[population.getIndividuals().length - 1].getFitness();
             float average_fitness = 0;
             for (Individual individual : population.getIndividuals()) {
                 average_fitness += individual.getFitness();
             }
             average_fitness /= population.getIndividuals().length;
-            if(Settings.getInstance().isViewResults()) {
+            if (Settings.getInstance().isViewResults()) {
                 System.out.println("BEST FITNESS: " + best_fitness);
                 System.out.println("WORST FITNESS: " + worst_fitness);
                 System.out.println("AVERAGE FITNESS: " + average_fitness);
@@ -99,11 +107,10 @@ public class GAEngine {
 
             EventManager.getInstance().newAVG(average_fitness);
             EventManager.getInstance().nextCycle(cycle);
-            
+
 
             List<Pair<Individual, Individual>> crossoverCandidates = new ArrayList<>();
             int howManyCrossoverCandidates = (int) (Settings.getInstance().getPopulationSize() * Settings.getInstance().getCrossoverProbability());
-
 
 
             for (int i = 0; i < howManyCrossoverCandidates; i++) {
@@ -179,42 +186,40 @@ public class GAEngine {
 
             //extract best individual
             Individual bestIndividual = allIndividuals.get(0);
-            if(Settings.getInstance().isViewResults()) {
+            if (Settings.getInstance().isViewResults()) {
                 System.out.println("kalergi %: " + Settings.getInstance().getKalergi());
                 System.out.println("Total population: " + allIndividuals.size());
             }
             //kalergi count calculation  (population : 100 = x : 0.4 )  ---
-            int kalergiNumberOfIndividuals = (int) ((float)Settings.getInstance().getKalergi() * (float)allIndividuals.size());
+            int kalergiNumberOfIndividuals = (int) ((float) Settings.getInstance().getKalergi() * (float) allIndividuals.size());
             //generate kalergi individuals
             List<Individual> kalergiIndividuals = new ArrayList<>();
             for (int i = 0; i < kalergiNumberOfIndividuals; i++) {
                 //generate random number of avg between min and max
                 int numberOfAVG = Utils.randomInRange(Settings.getInstance().getMinimumAGV(), Settings.getInstance().getMaximumAGV());
 
-                Individual kalergiIndividual = new Individual(numberOfAVG) ;
+                Individual kalergiIndividual = new Individual(numberOfAVG);
                 kalergiIndividual.setKalergi(true);
                 kalergiIndividual.calculateReloads();
                 kalergiIndividuals.add(kalergiIndividual);
             }
 
 
-
-
             //set new population
-            Individual [] newPopulation = new Individual[allIndividuals.size()];
+            Individual[] newPopulation = new Individual[allIndividuals.size()];
             for (int i = 0; i < allIndividuals.size(); i++) {
                 newPopulation[i] = allIndividuals.get(i);
             }
 
             //add kalergi individuals to population
             for (int i = 0; i < kalergiIndividuals.size(); i++) {
-                newPopulation[newPopulation.length-i-1] = kalergiIndividuals.get(i);
+                newPopulation[newPopulation.length - i - 1] = kalergiIndividuals.get(i);
             }
 
 
             population.setIndividuals(newPopulation);
 
-            if(Settings.getInstance().isViewResults()) {
+            if (Settings.getInstance().isViewResults()) {
                 //print iteration
                 System.out.println("Iteration: " + cycle + " Best fitness: " + bestIndividual.getFitness());
                 //print best individual
@@ -223,7 +228,9 @@ public class GAEngine {
 
                 population.printWithManyJobs();
             }
-            
+
+            GAEngine.getInstance().setCurrentCycle(cycle);
+
             //calcola la media delle fitness di tutti gli individui
 //            float avgFitness = 0;
 //            for (int i = 0; i < population.getIndividuals().length; i++) {
