@@ -373,14 +373,14 @@ public class ProcessViewerFrame extends javax.swing.JFrame implements SolutionLi
                 System.out.println(ConsoleColors.ANSI_YELLOW + "Hello World!" + ConsoleColors.ANSI_RESET);
                 System.out.println("Ciao Luca come va tutt'appost ?");
                 Settings.getInstance().setElitism(10);
-                GAEngine.getInstance().setMaxCycle(500);
+                GAEngine.getInstance().setMaxCycle(1500);
                 Settings.getInstance().setVerbose(false);
-                Settings.getInstance().setBatteryCapacity(10);
+                Settings.getInstance().setBatteryCapacity(40);
                 Settings.getInstance().setMaxTime(10);
                 Settings.getInstance().setPopulationSize(100);
                 Settings.getInstance().setNumberOfJobs(40);
                 Settings.getInstance().setKalergi(0.4f);
-                Settings.getInstance().setMaximumEnergyOfJob(5);
+                Settings.getInstance().setMaximumEnergyOfJob(15);
                 JobManager.getInstance().init(new RealJobGenerator());
                 JobManager.getInstance().generateJobs();
                 try {
