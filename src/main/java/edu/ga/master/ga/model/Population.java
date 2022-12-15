@@ -33,9 +33,6 @@ public class Population {
 
     public Pair<Individual, Individual> selectParents() throws GAInconsistencyException {
 
-        //si suppone che l'array di individui sia già ordinato in base alla fitness in ordine decrecente
-
-
         Individual parent1 = null;
         Individual parent2 = null;
         switch (GAEngine.getInstance().getSelectionStrategy()) {
@@ -62,7 +59,6 @@ public class Population {
 
     public void replace(List<Individual> children) {
         //si suppone che la lista di figli sia già ordinata in base alla fitness in ordine decrecente
-
         //se un figlio ha fitness minore di un individuo della popolazione, lo sostituisco
         for (Individual child : children) {
             for (int i = 0; i < individuals.length; i++) {
@@ -87,10 +83,14 @@ public class Population {
 
     public void printWithManyJobs() {
         printSettings();
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------------------------" +
+                "--------------------------------------------------------------------------------------------------" +
+                "------------------------------------");
         System.out.printf("%12s | %8s | %10s | %10s |", "INDIVIDUAL", "N. AGV", "MAKESPAN", "FITNESS");
         System.out.println();
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------" +
+                "--------------------------------------------------------------------------------------------" +
+                "---------------------------------------------");
         int size = Settings.getInstance().getPopulationSize();
         for (int i = 0; i < size; i++) {
 
@@ -98,7 +98,10 @@ public class Population {
             String fitness = String.format("%.2f", individuals[i].getFitness());
             String makespan = String.format("%.2f", individuals[i].getMakespan());
             String kalergi = individuals[i].isKalergi() ? "N" : "";
-            System.out.printf("%12s | %8s | %10s | %10s | %8s |" , ""+i, individuals[i].getNumAGV(),""+makespan, ""+fitness,kalergi);
+            System.out.printf("%12s | %8s | %10s | %10s | %8s |" , ""+i,
+                    individuals[i].getNumAGV(),
+                    ""+makespan,
+                    ""+fitness,kalergi);
             System.out.println();
 //            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
@@ -127,10 +130,14 @@ public class Population {
     public void print(boolean withReloads){
 
         printSettings();
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------------------" +
+                "---------------------------------------------------------------------------------------------" +
+                "-----------------------------------------------");
         System.out.printf("%12s | %90s | %90s | %8s | %10s | %10s |", "INDIVIDUAL","JOB & RELOADS ASSIGNEMENTS", "AGV ASSIGNEMENT", "N. AGV","MAKESPAN", "FITNESS");
         System.out.println();
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------------" +
+                "----------------------------------------------------------------------------------------------" +
+                "------------------------------------------------");
         int size = Settings.getInstance().getPopulationSize();
         for (int i = 0; i < size; i++) {
 //            System.out.print("Individual " + i + ": ");
@@ -140,13 +147,16 @@ public class Population {
             //format fitness in 2 decimali
             String fitness = String.format("%.2f", individuals[i].getFitness());
             String makespan = String.format("%.2f", individuals[i].getMakespan());
-            System.out.printf("%12s | %90s | %90s | %8s | %10s| %10s |" , ""+i,jobAssignement, agvAssignement, individuals[i].getNumAGV(),""+makespan,""+fitness);
+            System.out.printf("%12s | %90s | %90s | %8s | %10s| %10s |" ,
+                    ""+i,
+                    jobAssignement,
+                    agvAssignement,
+                    individuals[i].getNumAGV(),
+                    ""+makespan,
+                    ""+fitness);
             System.out.println();
-//            System.out.println(individuals[i].printJobs(withReloads) + " with "+individuals[i].getNumAGV()+" AGV");
         }
     }
-
-
     
     private Population(Builder builder){
         int size = Settings.getInstance().getPopulationSize();
@@ -189,11 +199,13 @@ public class Population {
         }
         float averageEnergyConsumption = Settings.getInstance().getBatteryCapacity()/2;
         float numero_ricariche = (float) (sumEnergies/averageEnergyConsumption);
-        float lowerBound = (float) ((sumTimes + numero_ricariche*averageEnergyConsumption)/Settings.getInstance().getMaximumAGV());
+        float lowerBound = (float) ((sumTimes + numero_ricariche*averageEnergyConsumption)/
+                Settings.getInstance().getMaximumAGV());
 
         float upperBound = (float) ((sumTimes + numero_ricariche*Settings.getInstance().getBatteryCapacity()) /2);
 
-        theta = (upperBound - lowerBound)/(Settings.getInstance().getMaximumAGV() - Settings.getInstance().getMinimumAGV());
+        theta = (upperBound - lowerBound)/
+                (Settings.getInstance().getMaximumAGV() - Settings.getInstance().getMinimumAGV());
 
     }
 
@@ -261,7 +273,6 @@ public class Population {
         public Population build(){
             return new Population(this);
         }
-
 
     }
 }
